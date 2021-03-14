@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:market_categories_bloc/src/blocs/blocs.dart';
+import 'package:market_categories_bloc/src/ui/shopping_list_view.dart';
 
 class ShoppingListsView extends StatelessWidget {
 
@@ -70,23 +72,14 @@ class _ShoppingLists extends StatelessWidget {
       return ListView.builder(
         itemCount: shoppingListsBloc.shoppingLists.props.length,
         itemBuilder: (context, index) {
-          return Card(
-            child : ListTile(
-              leading: IconButton(
-                  icon: Icon(Icons.add_shopping_cart),
-                  onPressed: () {
-                    _showCatalog(context, shoppingListsBloc.shoppingLists.props.elementAt(index));
-                  }
-              ),
-              title: Text(shoppingListsBloc.shoppingLists.props.elementAt(index)),
-              trailing: IconButton(
-                icon: Icon(Icons.remove),
-                  onPressed: (){
-                    shoppingListsBloc.add(RemoveList(listName: shoppingListsBloc.shoppingLists.props.elementAt(index)));
-                  }
-              ),
-              
-            ),
+          return ShoppingListView(
+            shoppingListsBloc.shoppingLists.props.elementAt(index),
+            (){
+              _showCatalog(context, shoppingListsBloc.shoppingLists.props.elementAt(index));
+            },
+            (){
+              _launchRemoveListEvent(shoppingListsBloc.shoppingLists.props.elementAt(index));
+            }
           );
         }
       );
@@ -96,8 +89,6 @@ class _ShoppingLists extends StatelessWidget {
         child: Text('You dont have any list'),
       );
     }
-        //}
-    //);
   }
 
   void _showCatalog(BuildContext context, String listName){
@@ -106,12 +97,10 @@ class _ShoppingLists extends StatelessWidget {
       '/catalog',
       arguments: listName
     );
-    /*Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => CatalogView(listName)
-      ),
-    );*/
+  }
+
+  void _launchRemoveListEvent(String listName){
+    shoppingListsBloc.add(RemoveList(listName: listName));
   }
 
 }
