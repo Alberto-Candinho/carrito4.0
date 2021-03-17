@@ -8,15 +8,16 @@ class ShoppingListsView extends StatelessWidget {
     final ShoppingListsBloc shoppingListsBloc =
         BlocProvider.of<ShoppingListsBloc>(context, listen: true);
     return Scaffold(
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           title: const Text(
-            'Shopping Lists',
-            style: TextStyle(color: Colors.black87),
+            'Listas da compra',
+            style: TextStyle(color: Color(0xFFf0f0f1), fontSize: 25),
           ),
-          backgroundColor: Color(0xFFfcd06f),
+          backgroundColor: Color(0xFF5bb580),
         ),
         body: ColoredBox(
-            color: Color(0xFFb5eecc),
+            color: Color(0xFFf3f3f3),
             child: Column(children: [
               Expanded(
                   child: Padding(
@@ -27,11 +28,13 @@ class ShoppingListsView extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             final newListName =
-                await _getNewListName(context /*, shoppingListsBloc*/);
-            shoppingListsBloc.add(CreateList(listName: newListName));
+                await _getNewListName(context /*, shoppingListsBloc*/) ?? '';
+            if (newListName != "") {
+              shoppingListsBloc.add(CreateList(listName: newListName));
+            }
           },
           tooltip: 'Create new list',
-          backgroundColor: Color(0xFFfcd06f),
+          backgroundColor: Color(0xFFf1471d),
           child: Icon(
             Icons.add_circle,
           ),
@@ -44,13 +47,13 @@ class ShoppingListsView extends StatelessWidget {
       context: context,
       builder: (context) {
         return AlertDialog(
+            title: Text("Introduza o nome da lista"),
             content: new TextField(
                 autofocus: true,
-                decoration: new InputDecoration(
-                    labelText: 'List Name', hintText: 'eg. list1'),
+                decoration: new InputDecoration(hintText: 'eg. lista compra'),
                 onSubmitted: (String value) {
-                  //shoppingListsBloc.add(CreateList(listName: value));
                   Navigator.of(context, rootNavigator: true).pop(value);
+                  //shoppingListsBloc.add(CreateList(listName: value));
                 }));
       },
     );
@@ -105,20 +108,20 @@ class _ShoppingLists extends StatelessWidget {
                     fit: BoxFit.scaleDown)),
           ),
           Container(
-            alignment: Alignment(0, 0.15),
+            alignment: Alignment(0, 0.25),
             child: Text(
-              "You dont have any list",
+              "Non ten ningunha lista",
               textAlign: TextAlign.center,
               style: TextStyle(
-                  color: Colors.black,
+                  color: Color(0xFFf1471d),
                   fontSize: 25,
                   fontWeight: FontWeight.bold),
             ),
           ),
           Container(
-            alignment: Alignment(0, 0.30),
+            alignment: Alignment(0, 0.40),
             child: Text(
-              "Create list and add them to your trolley for an easier shopping experience",
+              "Cree a súa lista e engada os productors para unha mellor experiencia de compra",
               textAlign: TextAlign.center,
               style: TextStyle(color: Colors.black38, fontSize: 15),
             ),
