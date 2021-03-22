@@ -2,7 +2,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:market_categories_bloc/src/blocs/blocs.dart';
-import 'package:market_categories_bloc/src/ui/shopping_list_view.dart';
+import 'package:market_categories_bloc/src/models/models.dart';
+import 'package:market_categories_bloc/src/ui/ShoppingLists/shopping_list_view.dart';
 
 class ShoppingListsView extends StatelessWidget {
 
@@ -27,7 +28,7 @@ class ShoppingListsView extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
             onPressed: () async {
               final newListName = await _getNewListName(context/*, shoppingListsBloc*/);
-              shoppingListsBloc.add(CreateList(listName: newListName));
+              shoppingListsBloc.add(CreateList(list: new ShoppingList(listName: newListName)));
             },
             tooltip: 'Create new list',
             child: Icon(Icons.add_circle),
@@ -91,16 +92,16 @@ class _ShoppingLists extends StatelessWidget {
     }
   }
 
-  void _showCatalog(BuildContext context, String listName){
+  void _showCatalog(BuildContext context, ShoppingList list){
     Navigator.pushNamed(
       context,
       '/catalog',
-      arguments: listName
+      arguments: list
     );
   }
 
-  void _launchRemoveListEvent(String listName){
-    shoppingListsBloc.add(RemoveList(listName: listName));
+  void _launchRemoveListEvent(ShoppingList list){
+    shoppingListsBloc.add(RemoveList(list: list));
   }
 
 }

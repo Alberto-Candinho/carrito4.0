@@ -1,26 +1,39 @@
 import 'dart:async';
-import 'package:market_categories_bloc/src/models/Catalog/catalog.dart';
+import 'package:market_categories_bloc/src/models/Catalog/catalog_info.dart';
 import 'dart:convert';
 import 'market_client.dart';
 import 'market_cache.dart';
 
 class MarketRepository {
-  final MarketClient market_client;
-  final MarketCache market_cache;
+  final String categoriesEndpoint = "/";
+  final MarketClient marketClient;
+  final MarketCache marketCache;
 
-  MarketRepository(this.market_client, this.market_cache);
+  MarketRepository(this.marketClient, this.marketCache);
 
-  Future<Catalog> fetchCategories() async {
-    if (market_cache.contains("subcategories")) {
-      return Catalog.fromJson(json.decode(market_cache.get("subcategories").body));
-    } else {
-      final result = await market_client.fetchCategoriesList();
-      market_cache.set("subcategories", result);
-      return Catalog.fromJson(json.decode(result.body));
+  Future<CatalogInfo> getCatalogCategories() async {
+    if (marketCache.contains(categoriesEndpoint)) {
+      return marketCache.get(categoriesEndpoint);
+    }
+    else {
+      final result = await marketClient.sendRequest(categoriesEndpoint);
+      final catalogInfo = CatalogInfo.fromCategoriesJson(json.decode(result.body));
+      marketCache.set(categoriesEndpoint, catalogInfo);
+      return catalogInfo;
     }
   }
 
-
+  Future<CatalogInfo> getCatalogProducts(String productsEndpoint) async {
+    if (marketCache.contains(categoriesEndpoint + productsEndpoint)) {
+      return marketCache.get(productsEndpoint);
+    }
+    else {
+      final result = await marketClient.sendRequest(categoriesEndpoint + productsEndpoint);
+      final catalogInfo = CatalogInfo.fromProductsJson(json.decode(result.body));
+      marketCache.set(categoriesEndpoint + productsEndpoint, catalogInfo);
+      return catalogInfo;
+    }
+  }
 
 
 }

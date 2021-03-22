@@ -3,9 +3,7 @@ import 'package:market_categories_bloc/src/models/models.dart';
 import 'package:market_categories_bloc/src/resources/market_cache.dart';
 import 'package:market_categories_bloc/src/resources/market_client.dart';
 import 'package:market_categories_bloc/src/resources/market_repository.dart';
-import 'ui/shopping_lists_view.dart';
-import 'package:flutter/material.dart';
-import 'package:bloc/bloc.dart';
+import 'ui/ShoppingLists/shopping_lists_view.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:market_categories_bloc/src/blocs/blocs.dart';
 import 'package:market_categories_bloc/src/ui/views.dart';
@@ -30,7 +28,7 @@ class App extends StatelessWidget {
         initialRoute: '/',
         routes: {
           '/': (context) => ShoppingListsView(),
-          '/catalog': (context) => CatalogView(),
+          '/catalog': (context) => CatalogInfoView(),
         },
       ),
     );

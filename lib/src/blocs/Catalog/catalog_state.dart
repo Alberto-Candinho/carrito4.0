@@ -11,12 +11,14 @@ abstract class CatalogState extends Equatable {
 class CatalogLoading extends CatalogState {}
 
 class CatalogLoaded extends CatalogState {
-  const CatalogLoaded(this.catalog);
 
-  final Catalog catalog;
+  final List<Product> currentSelectedProducts;
+  final List<Category> catalogCategories;
+
+  const CatalogLoaded(this.catalogCategories, this.currentSelectedProducts);
 
   @override
-  List<Object> get props => [catalog];
+  List<Object> get props => [this.catalogCategories, this.currentSelectedProducts];
 }
 
 class CatalogError extends CatalogState {}

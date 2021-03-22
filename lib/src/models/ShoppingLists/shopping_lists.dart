@@ -1,22 +1,22 @@
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
+import 'package:market_categories_bloc/src/models/ShoppingLists/shopping_list.dart';
+import '../models.dart';
 
-@immutable
+//@immutable
 class ShoppingLists extends Equatable {
-  List<String> _shoppingLists = [];
+  List<ShoppingList> _shoppingLists = [];
 
-  void createList(String listName){
-    if(!_shoppingLists.contains(listName)) {
-      _shoppingLists.add(listName);
+  void addList(ShoppingList list){
+    if(!_shoppingLists.contains(list)) {
+      _shoppingLists.add(list);
     }
   }
 
-  void removeList(String listName){
-    _shoppingLists.remove(listName);
+  void removeList(ShoppingList list){
+    _shoppingLists.remove(list);
   }
 
   @override
-  // TODO: implement props
-  List<String> get props => _shoppingLists;
+  List<ShoppingList> get props => _shoppingLists;
 
 }
