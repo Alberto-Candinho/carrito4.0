@@ -1,27 +1,41 @@
 import 'package:flutter/foundation.dart';
 
 class Product {
-  final int id;
+  //final int id;
   final String name;
+  final String description;
+  final String brand;
   final double unitPrice;
   bool _isSelected = false;
 
-  Product({@required this.id, @required this.name, @required this.unitPrice});
+  //Product({@required this.id, @required this.name, @required this.unitPrice});
+  Product({@required this.name, @required this.description, @required this.brand, @required this.unitPrice});
 
-  int getId(){
+  /*int getId(){
     return this.id;
-  }
+  }*/
 
   String getName(){
     return this.name;
+  }
+
+  String getDescription(){
+    return this.description;
+  }
+
+  String getBrand(){
+    return this.brand;
   }
 
   double getPrice(){
     return this.unitPrice;
   }
 
-  String toString(){
+  /*String toString(){
     return this.id.toString() + "\n" + this.name + "\n" + this.unitPrice.toString() + "\n";
+  }*/
+  String toString(){
+    return this.name + " " + this.brand + "\n" + this.description + "\n" + this.unitPrice.toString() + "\n";
   }
 
   void setIsSelected(bool isSelected){

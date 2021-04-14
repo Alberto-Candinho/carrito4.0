@@ -15,8 +15,11 @@ class App extends StatelessWidget {
     final ShoppingLists shoppingLists = new ShoppingLists();
     return MultiBlocProvider(
       providers: [
-        BlocProvider<CatalogBloc>(
-          create: (_) => CatalogBloc(marketRepository: repository),
+        BlocProvider<CategoriesBloc>(
+          create: (_) => CategoriesBloc(marketRepository: repository),
+        ),
+        BlocProvider<ProductsBloc>(
+          create: (_) => ProductsBloc(marketRepository: repository),
         ),
         BlocProvider<ShoppingListsBloc>(
           create: (_) => ShoppingListsBloc(shoppingLists: shoppingLists),

@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:market_categories_bloc/src/blocs/Catalog/Categories/categories_bloc.dart';
 import 'package:market_categories_bloc/src/blocs/blocs.dart';
 import 'package:market_categories_bloc/src/models/models.dart';
 import 'package:market_categories_bloc/src/ui/views.dart';
@@ -9,11 +10,8 @@ class CatalogInfoView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    BlocProvider.of<CatalogBloc>(context).add(LoadCatalogCategories());
-    final ShoppingList list = ModalRoute
-        .of(context)
-        .settings
-        .arguments;
+    BlocProvider.of<CategoriesBloc>(context).add(LoadCategories());
+    final ShoppingList list = ModalRoute.of(context).settings.arguments;
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(

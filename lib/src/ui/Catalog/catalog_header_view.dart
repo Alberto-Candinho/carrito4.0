@@ -7,14 +7,14 @@ class CatalogHeaderView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CatalogBloc, CatalogState>(
+    return BlocBuilder<CategoriesBloc, CategoriesState>(
       builder: (context, state) {
-        if (state is CatalogLoading) {
+        if (state is LoadingCategories) {
           return Text('Loading Categories',
               style: TextStyle(color: Colors.blue)
           );
         }
-        else if (state is CatalogLoaded) {
+        else if (state is CategoriesLoaded) {
           List<Category> loadedCategories = state.props.elementAt(0);
           return _CatalogCategoriesView(categoriesList: loadedCategories);
         }
@@ -65,13 +65,15 @@ class _CatalogCategoriesViewState extends State<_CatalogCategoriesView> {
                       setState(() {
                         selectedCategory = categoriesList[index];
                       });
+                      String productsEndpoint = selectedCategory.getName();
+                      BlocProvider.of<ProductsBloc>(context).add(LoadProducts(productsEndpoint: productsEndpoint));
                     },
                   )
                 );
               }
           )
         ),
-        Container(
+        /*Container(
           height: 50,
           width: 350,
 
@@ -88,7 +90,7 @@ class _CatalogCategoriesViewState extends State<_CatalogCategoriesView> {
                       ),
                       onTap: (){
                         String productsEndpoint = selectedCategory.getName() + "/" + selectedCategory.getTags()[index];
-                        BlocProvider.of<CatalogBloc>(context).add(LoadCatalogProducts(productsEndpoint: productsEndpoint));
+                        BlocProvider.of<ProductsBloc>(context).add(LoadProducts(productsEndpoint: productsEndpoint));
                       },
                     )
                 );
@@ -96,7 +98,7 @@ class _CatalogCategoriesViewState extends State<_CatalogCategoriesView> {
               }
           )
 
-        )
+        )*/
       ],
     );
   }

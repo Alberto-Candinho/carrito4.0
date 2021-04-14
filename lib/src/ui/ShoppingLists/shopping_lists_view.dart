@@ -27,7 +27,7 @@ class ShoppingListsView extends StatelessWidget {
         ),
         floatingActionButton: FloatingActionButton(
             onPressed: () async {
-              final newListName = await _getNewListName(context/*, shoppingListsBloc*/);
+              final newListName = await _getNewListName(context);
               shoppingListsBloc.add(CreateList(list: new ShoppingList(listName: newListName)));
             },
             tooltip: 'Create new list',
@@ -36,7 +36,7 @@ class ShoppingListsView extends StatelessWidget {
     );
   }
 
-  Future<String> _getNewListName(BuildContext context/*, ShoppingListsBloc shoppingListsBloc*/) {
+  Future<String> _getNewListName(BuildContext context) {
     return showDialog (
       context: context,
       builder: (context){

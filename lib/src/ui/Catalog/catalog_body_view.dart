@@ -21,13 +21,13 @@ class _CatalogProductsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocBuilder<CatalogBloc, CatalogState>(
+    return BlocBuilder<ProductsBloc, ProductsState>(
       builder: (context, state){
-        if(state is CatalogLoading){
+        if(state is LoadingProducts){
           return Center(child: CircularProgressIndicator());
         }
-        else if(state is CatalogLoaded){
-          List<Product> loadedProducts = state.props.elementAt(1);
+        else if(state is ProductsLoaded){
+          List<Product> loadedProducts = state.props.elementAt(0);
           return Container(
               height: 400,
               color: Colors.grey,
