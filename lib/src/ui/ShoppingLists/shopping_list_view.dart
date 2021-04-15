@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:market_categories_bloc/src/models/models.dart';
-import 'package:qr_flutter/qr_flutter.dart';
-
+import 'ShoppingListForms/shopping_list_summary.dart';
+import 'ShoppingListForms/shopping_list_with_products.dart';
+import 'ShoppingListForms/shopping_list_with_QR.dart';
 
 class ShoppingListView extends StatefulWidget{
 
@@ -20,11 +21,25 @@ class ShoppingListView extends StatefulWidget{
 class _ShoppingListState extends State<ShoppingListView>{
 
   bool _showQR = false;
+  bool _showProducts = false;
 
   void _switchQR() {
     setState(() {
       if(_showQR) _showQR = false;
-      else _showQR = true;
+      else{
+        _showQR = true;
+        _showProducts = false;
+      }
+    });
+  }
+
+  void _switchProducts() {
+    setState(() {
+      if(_showProducts) _showProducts = false;
+      else{
+        _showProducts = true;
+        _showQR = false;
+      }
     });
   }
 
@@ -36,132 +51,25 @@ class _ShoppingListState extends State<ShoppingListView>{
     Function onPressedQRButton = (){
       _switchQR();
     };
+    Function onPressedProductsButton = (){
+      _switchProducts();
+    };
 
-    if(!_showQR) {
-      return ShoppingListSummaryView(list: list, onPressedAddButton: onPressedAddButton, onPressedRemoveButton: onPressedRemoveButton, onPressedQrButton: onPressedQRButton);
+
+    if(_showQR) {
+      return ShoppingListWithQR(list: list, onPressedAddButton: onPressedAddButton, onPressedRemoveButton: onPressedRemoveButton,
+        onPressedQrButton: onPressedQRButton, onPressedProductsButton: onPressedProductsButton);
     }
-    else {
-      return ShoppingListWithQR(list: list, onPressedAddButton: onPressedAddButton, onPressedRemoveButton: onPressedRemoveButton, onPressedQrButton: onPressedQRButton);
+    else if(_showProducts){
+      return ShoppingListWithProducts(list: list, onPressedAddButton: onPressedAddButton, onPressedRemoveButton: onPressedRemoveButton,
+          onPressedQrButton: onPressedQRButton, onPressedProductsButton: onPressedProductsButton);
+    }
+    else{
+      return ShoppingListSummary(list: list, onPressedAddButton: onPressedAddButton, onPressedRemoveButton: onPressedRemoveButton,
+        onPressedQrButton: onPressedQRButton, onPressedProductsButton: onPressedProductsButton);
     }
   }
 
 
 }
-
-class ShoppingListWithQR extends StatelessWidget {
-
-  final ShoppingList list;
-  final Function onPressedAddButton;
-  final Function onPressedRemoveButton;
-  final Function onPressedQrButton;
-
-  const ShoppingListWithQR({@required this.list, @required this.onPressedAddButton, @required this.onPressedRemoveButton, @required this.onPressedQrButton});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-        children:[
-          Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.add_shopping_cart),
-                onPressed: onPressedAddButton,
-              ),
-              Expanded(
-                  child: GestureDetector(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(
-                        list.listName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      List<Product> productsInList = list.getProducts();
-                      for (int index = 0; index <
-                          productsInList.length; index++)
-                        print(productsInList[index]);
-                    },
-                  )
-              ),
-              IconButton(
-                icon: Icon(Icons.remove),
-                onPressed: onPressedRemoveButton,
-              ),
-              IconButton(
-                icon: Icon(Icons.qr_code_scanner_sharp),
-                onPressed: onPressedQrButton,
-              ),
-              IconButton(
-                icon: Icon(Icons.share),
-                onPressed: () {},
-              )
-            ],
-          ),
-          QrImage(
-            data: list.listName,
-          )
-        ]
-
-    );
-  }
-}
-
-class ShoppingListSummaryView extends StatelessWidget{
-
-  final ShoppingList list;
-  final Function onPressedAddButton;
-  final Function onPressedRemoveButton;
-  final Function onPressedQrButton;
-
-  const ShoppingListSummaryView({@required this.list, @required this.onPressedAddButton, @required this.onPressedRemoveButton, @required this.onPressedQrButton});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-          child: Row(
-            children: [
-              IconButton(
-                icon: Icon(Icons.add_shopping_cart),
-                onPressed: onPressedAddButton,
-              ),
-              Expanded(
-                  child: GestureDetector(
-                    child: SingleChildScrollView(
-                      scrollDirection: Axis.horizontal,
-                      child: Text(
-                        list.listName,
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    onTap: () {
-                      List<Product> productsInList = list.getProducts();
-                      for (int index = 0; index <
-                          productsInList.length; index++)
-                        print(productsInList[index]);
-                    },
-                  )
-              ),
-              IconButton(
-                icon: Icon(Icons.remove),
-                onPressed: onPressedRemoveButton,
-              ),
-              IconButton(
-                icon: Icon(Icons.qr_code_scanner_sharp),
-                onPressed: onPressedQrButton,
-              ),
-              IconButton(
-                icon: Icon(Icons.share),
-                onPressed: () {},
-              )
-            ],
-          )
-      );
-    }
-}
-
 

@@ -44,7 +44,10 @@ class _CatalogProductsView extends StatelessWidget {
                       onPressed: (){
                         List<Product> productsToAdd = [];
                         for(int index = 0; index < loadedProducts.length; index++){
-                          if(loadedProducts[index].isSelected()) productsToAdd.add(loadedProducts[index]);
+                          if(loadedProducts[index].isSelected()){
+                            loadedProducts[index].setIsSelected(false);
+                            productsToAdd.add(loadedProducts[index]);
+                          }
                         }
                         BlocProvider.of<ShoppingListsBloc>(context).add(AddProductsToList(list: ModalRoute.of(context).settings.arguments, productsToAdd: productsToAdd));
                       }
