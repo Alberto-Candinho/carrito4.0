@@ -5,3 +5,5 @@ export 'Catalog/catalog_body_view.dart';
 
 export 'ShoppingLists/shopping_lists_view.dart';
 export 'ShoppingLists/shopping_list_view.dart';
+
+export 'error_view.dart';

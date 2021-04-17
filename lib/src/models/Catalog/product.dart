@@ -1,19 +1,14 @@
 import 'package:flutter/foundation.dart';
 
 class Product {
-  //final int id;
+
   final String name;
   final String description;
   final String brand;
   final double unitPrice;
   bool _isSelected = false;
 
-  //Product({@required this.id, @required this.name, @required this.unitPrice});
   Product({@required this.name, @required this.description, @required this.brand, @required this.unitPrice});
-
-  /*int getId(){
-    return this.id;
-  }*/
 
   String getName(){
     return this.name;
@@ -31,9 +26,6 @@ class Product {
     return this.unitPrice;
   }
 
-  /*String toString(){
-    return this.id.toString() + "\n" + this.name + "\n" + this.unitPrice.toString() + "\n";
-  }*/
   String toString(){
     return this.name + " " + this.brand + "\n" + this.description + "\n" + this.unitPrice.toString() + "\n";
   }

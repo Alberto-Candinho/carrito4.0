@@ -8,10 +8,15 @@ import 'package:market_categories_bloc/src/ui/views.dart';
 
 class CatalogInfoView extends StatelessWidget {
 
+  final ShoppingList list;
+
+  const CatalogInfoView({@required this.list});
+
   @override
   Widget build(BuildContext context) {
+
     BlocProvider.of<CategoriesBloc>(context).add(LoadCategories());
-    final ShoppingList list = ModalRoute.of(context).settings.arguments;
+
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -49,7 +54,7 @@ class CatalogInfoView extends StatelessWidget {
                     ],
                   )
                 ),
-                CatalogBodyView()
+                CatalogBodyView(list: list)
               ]
           )
       ),

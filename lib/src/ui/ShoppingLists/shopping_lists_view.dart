@@ -7,102 +7,102 @@ import 'package:market_categories_bloc/src/ui/ShoppingLists/shopping_list_view.d
 
 class ShoppingListsView extends StatelessWidget {
 
+  String sharedListName;
+  final Function onPressedCatalogButton;
+
+  ShoppingListsView(
+      {@required this.sharedListName, @required this.onPressedCatalogButton});
+
   @override
   Widget build(BuildContext context) {
-    final ShoppingListsBloc shoppingListsBloc = BlocProvider.of<ShoppingListsBloc>(context, listen: true);
+    if (sharedListName != null) {
+      BlocProvider.of<ShoppingListsBloc>(context).add(
+          CreateList(list: new ShoppingList(listName: sharedListName)));
+      sharedListName = null;
+    }
+
     return Scaffold(
         appBar: AppBar(title: const Text('Shopping Lists')),
         body: ColoredBox(
-          color: Colors.yellow,
-          child: Column(
-            children: [
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(32),
-                  child: _ShoppingLists(shoppingListsBloc),
-                )
-              )
-            ]
-          )
+            color: Colors.yellow,
+            child: Column(
+                children: [
+                  Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.all(32),
+                        child: _ShoppingLists(onPressedCatalogButton),
+                      )
+                  )
+                ]
+            )
         ),
         floatingActionButton: FloatingActionButton(
-            onPressed: () async {
-              final newListName = await _getNewListName(context);
-              shoppingListsBloc.add(CreateList(list: new ShoppingList(listName: newListName)));
-            },
-            tooltip: 'Create new list',
-            child: Icon(Icons.add_circle),
+          onPressed: () async {
+            final newListName = await _getNewListName(context);
+            BlocProvider.of<ShoppingListsBloc>(context).add(
+                CreateList(list: new ShoppingList(listName: newListName)));
+          },
+          tooltip: 'Create new list',
+          child: Icon(Icons.add_circle),
         )
     );
   }
 
+
   Future<String> _getNewListName(BuildContext context) {
-    return showDialog (
+    return showDialog(
       context: context,
-      builder: (context){
+      builder: (context) {
         return AlertDialog(
-          content: new TextField(
-            autofocus: true,
-            decoration: new InputDecoration(
-              labelText: 'List Name',
-              hintText: 'eg. list1'
-            ),
-            onSubmitted: (String value) {
-              //shoppingListsBloc.add(CreateList(listName: value));
-              Navigator.of(context, rootNavigator: true).pop(value);
-            }
-          )
+            content: new TextField(
+                autofocus: true,
+                decoration: new InputDecoration(
+                    labelText: 'List Name',
+                    hintText: 'eg. list1'
+                ),
+                onSubmitted: (String value) {
+                  Navigator.of(context, rootNavigator: true).pop(value);
+                }
+            )
         );
       },
     );
   }
-
 }
+
+
 
 class _ShoppingLists extends StatelessWidget {
 
-  final ShoppingListsBloc shoppingListsBloc;
+  final Function onPressedCatalogButton;
 
-  _ShoppingLists(this.shoppingListsBloc);
+  _ShoppingLists(this.onPressedCatalogButton);
   @override
   Widget build(BuildContext context) {
-    if(shoppingListsBloc.state is ShoppingListsLoading){
-      return Center(child: CircularProgressIndicator());
-    }
-    else if(shoppingListsBloc.state is ShoppingListsAvailable) {
-      return ListView.builder(
-        itemCount: shoppingListsBloc.shoppingLists.props.length,
-        itemBuilder: (context, index) {
-          return ShoppingListView(
-            shoppingListsBloc.shoppingLists.props.elementAt(index),
-            (){
-              _showCatalog(context, shoppingListsBloc.shoppingLists.props.elementAt(index));
-            },
-            (){
-              _launchRemoveListEvent(shoppingListsBloc.shoppingLists.props.elementAt(index));
-            }
-          );
-        }
-      );
-    }
-    else{
-      return Center(
-        child: Text('You dont have any list'),
-      );
-    }
+    return BlocBuilder<ShoppingListsBloc, ShoppingListsState>(builder: (context, state){
+      if(state is ShoppingListsLoading){
+        return Center(child: CircularProgressIndicator());
+      }
+      else if(state is ShoppingListsAvailable) {
+        ShoppingLists shoppingLists = state.props.elementAt(0);
+        return ListView.builder(
+          itemCount: shoppingLists.props.length,
+          itemBuilder: (context, index) {
+            ShoppingList list = shoppingLists.props.elementAt(index);
+            return ShoppingListView(list, onPressedCatalogButton,
+              (){
+                BlocProvider.of<ShoppingListsBloc>(context).add(RemoveList(list: list));
+              }
+            );
+          }
+        );
+      }
+      else{
+        return Center(child: Text('You dont have any list'));
+      }
+    });
   }
 
-  void _showCatalog(BuildContext context, ShoppingList list){
-    Navigator.pushNamed(
-      context,
-      '/catalog',
-      arguments: list
-    );
-  }
-
-  void _launchRemoveListEvent(ShoppingList list){
-    shoppingListsBloc.add(RemoveList(list: list));
-  }
 
 }
 

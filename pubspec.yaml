@@ -21,6 +21,7 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  share: ^2.0.1
   http: ^0.13.0
   qr_flutter: ^4.0.0
   flutter_bloc: ^6.1.3

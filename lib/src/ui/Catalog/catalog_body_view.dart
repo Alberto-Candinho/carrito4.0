@@ -6,18 +6,27 @@ import '../views.dart';
 
 class CatalogBodyView extends StatelessWidget{
 
+  final ShoppingList list;
+
+  const CatalogBodyView({@required this.list});
+
   @override
   Widget build(BuildContext context) {
+
     return Container(
         child: Padding(
           padding: const EdgeInsets.all(32),
-          child: _CatalogProductsView(),
+          child: _CatalogProductsView(list: list),
         )
     );
   }
 }
 
 class _CatalogProductsView extends StatelessWidget {
+
+  final ShoppingList list;
+
+  const _CatalogProductsView({@required this.list});
 
   @override
   Widget build(BuildContext context) {
@@ -49,7 +58,7 @@ class _CatalogProductsView extends StatelessWidget {
                             productsToAdd.add(loadedProducts[index]);
                           }
                         }
-                        BlocProvider.of<ShoppingListsBloc>(context).add(AddProductsToList(list: ModalRoute.of(context).settings.arguments, productsToAdd: productsToAdd));
+                        BlocProvider.of<ShoppingListsBloc>(context).add(AddProductsToList(list: list, productsToAdd: productsToAdd));
                       }
                   )
                 ],

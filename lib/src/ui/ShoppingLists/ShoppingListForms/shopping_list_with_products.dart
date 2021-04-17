@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:market_categories_bloc/src/models/models.dart';
+import 'package:share/share.dart';
+
 
 class ShoppingListWithProducts extends StatefulWidget {
 
@@ -35,7 +37,7 @@ class _ShoppingListWithProductsState extends State<ShoppingListWithProducts> {
                 children: [
                   IconButton(
                     icon: Icon(Icons.add_shopping_cart),
-                    onPressed: onPressedAddButton,
+                    onPressed: () => onPressedAddButton(list),
                   ),
                   Expanded(
                       child: GestureDetector(
@@ -61,7 +63,9 @@ class _ShoppingListWithProductsState extends State<ShoppingListWithProducts> {
                   ),
                   IconButton(
                     icon: Icon(Icons.share),
-                    onPressed: (){},
+                    onPressed: (){
+                      Share.share("shoppinglists.com/list/" + list.listName);
+                    },
                   )
                 ],
               ),

@@ -73,32 +73,7 @@ class _CatalogCategoriesViewState extends State<_CatalogCategoriesView> {
               }
           )
         ),
-        /*Container(
-          height: 50,
-          width: 350,
 
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: ((selectedCategory == null) ? 0 : selectedCategory.getTags().length),
-              itemBuilder: (context, index) {
-                return Container(
-                    width: 150,
-                    child: GestureDetector(
-                      child: SingleChildScrollView(
-                          scrollDirection: Axis.horizontal,
-                          child: Text(selectedCategory.getTags()[index])
-                      ),
-                      onTap: (){
-                        String productsEndpoint = selectedCategory.getName() + "/" + selectedCategory.getTags()[index];
-                        BlocProvider.of<ProductsBloc>(context).add(LoadProducts(productsEndpoint: productsEndpoint));
-                      },
-                    )
-                );
-
-              }
-          )
-
-        )*/
       ],
     );
   }
