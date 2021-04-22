@@ -20,7 +20,7 @@ class ShoppingListsRouteInformationParser extends RouteInformationParser<Shoppin
 
   @override
   RouteInformation restoreRouteInformation(ShoppingListsRoutePath path) {
-    if (path.isNotValid) {
+    if (path.isError) {
       return RouteInformation(location: '/404');
     }
     if (path.isHome) {

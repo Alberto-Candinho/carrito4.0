@@ -20,5 +20,5 @@ class ShoppingListsAvailable extends ShoppingListsState {
   List<Object> get props => [shoppingLists];
 }
 
-class NoShoppingLists extends ShoppingListsState{}
+/*class NoShoppingLists extends ShoppingListsState{}*/
 

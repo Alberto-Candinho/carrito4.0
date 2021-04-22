@@ -64,7 +64,11 @@ class _ShoppingListWithProductsState extends State<ShoppingListWithProducts> {
                   IconButton(
                     icon: Icon(Icons.share),
                     onPressed: (){
-                      Share.share("shoppinglists.com/list/" + list.listName);
+                      if(list.listId != null) Share.share("shoppinglists.com/list/" + list.listId);
+                      else showDialog(context: context, builder: (_) => new AlertDialog(
+                        title: new Text("Non se pode compartir a lista"),
+                        content: new Text("A lista: " + list.listName + " non se pode compartir porque non se pudo xerar un identificador para a mesma"),
+                      ));
                     },
                   )
                 ],

@@ -29,10 +29,12 @@ class ShoppingListsRouterDelegate extends RouterDelegate<ShoppingListsRoutePath>
 
   @override
   Widget build(BuildContext context) {
+    String newSharedListName = _listName;
+    _listName = null;
     return Navigator(
       key: navigatorKey,
       pages: [
-        MaterialPage(key: ValueKey('HomeView'), child: ShoppingListsView(sharedListName: _listName, onPressedCatalogButton: _catalogButtonTapped)),
+        MaterialPage(key: ValueKey('HomeView'), child: ShoppingListsView(sharedListName: newSharedListName, onPressedCatalogButton: _catalogButtonTapped)),
         if (showError)
           MaterialPage(key: ValueKey('ErrorView'), child: ErrorView())
         else if(showCatalog)
@@ -53,7 +55,7 @@ class ShoppingListsRouterDelegate extends RouterDelegate<ShoppingListsRoutePath>
 
   @override
   Future<void> setNewRoutePath(ShoppingListsRoutePath path) async {
-    if (path.isNotValid) {
+    if (path.isError) {
       _listName = null;
       showError = true;
       showCatalog = false;
