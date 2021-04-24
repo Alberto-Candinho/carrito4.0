@@ -8,7 +8,7 @@ class ShoppingListsRouterDelegate extends RouterDelegate<ShoppingListsRoutePath>
 
   final GlobalKey<NavigatorState> navigatorKey;
 
-  String _listName;
+  String _listId;
   bool showError = false;
   bool showCatalog = false;
   ShoppingList _catalogOriginList;
@@ -22,19 +22,19 @@ class ShoppingListsRouterDelegate extends RouterDelegate<ShoppingListsRoutePath>
     else if(showCatalog){
       return ShoppingListsRoutePath.catalog();
     }
-    return _listName == null
+    return _listId == null
         ? ShoppingListsRoutePath.home()
-        : ShoppingListsRoutePath.homeWithSharedList(_listName);
+        : ShoppingListsRoutePath.homeWithSharedList(_listId);
   }
 
   @override
   Widget build(BuildContext context) {
-    String newSharedListName = _listName;
-    _listName = null;
+    String newSharedListId = _listId;
+    _listId = null;
     return Navigator(
       key: navigatorKey,
       pages: [
-        MaterialPage(key: ValueKey('HomeView'), child: ShoppingListsView(sharedListName: newSharedListName, onPressedCatalogButton: _catalogButtonTapped)),
+        MaterialPage(key: ValueKey('HomeView'), child: ShoppingListsView(sharedListId: newSharedListId, onPressedCatalogButton: _catalogButtonTapped)),
         if (showError)
           MaterialPage(key: ValueKey('ErrorView'), child: ErrorView())
         else if(showCatalog)
@@ -43,7 +43,7 @@ class ShoppingListsRouterDelegate extends RouterDelegate<ShoppingListsRoutePath>
       onPopPage: (route, result) {
         if (!route.didPop(result)) return false;
         else{
-          _listName = null;
+          _listId = null;
           showError = false;
           showCatalog = false;
           notifyListeners();
@@ -56,25 +56,25 @@ class ShoppingListsRouterDelegate extends RouterDelegate<ShoppingListsRoutePath>
   @override
   Future<void> setNewRoutePath(ShoppingListsRoutePath path) async {
     if (path.isError) {
-      _listName = null;
+      _listId = null;
       showError = true;
       showCatalog = false;
       return;
     }
     else if(path.isHome) {
-      _listName = null;
+      _listId = null;
       showError = false;
       showCatalog = false;
       return;
     }
     else if(path.isHomeWithSharedList){
-      _listName = path.listName;
+      _listId = path.listId;
       showError = false;
       showCatalog = false;
       return;
     }
     else if(path.isCatalog){
-      _listName = null;
+      _listId = null;
       showError = false;
       showCatalog = true;
       return;
@@ -84,7 +84,7 @@ class ShoppingListsRouterDelegate extends RouterDelegate<ShoppingListsRoutePath>
   void _catalogButtonTapped(ShoppingList originList) {
     _catalogOriginList = originList;
     showCatalog = true;
-    _listName = null;
+    _listId = null;
     showError = false;
     notifyListeners();
   }

@@ -1,12 +1,10 @@
-import 'package:market_categories_bloc/src/models/models.dart';
-
 class MarketCache {
 
-  final _cache = <String, CatalogInfo>{};
+  final _cache = <String, Object>{};
 
-  CatalogInfo get(String term) => _cache[term];
+  Object get(String term) => _cache[term];
 
-  void set(String term, CatalogInfo result) => _cache[term] = result;
+  void set(String term, Object result) => _cache[term] = result;
 
   bool contains(String term) => _cache.containsKey(term);
 

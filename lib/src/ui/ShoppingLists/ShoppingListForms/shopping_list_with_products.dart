@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:market_categories_bloc/src/models/models.dart';
 import 'package:share/share.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:market_categories_bloc/src/blocs/blocs.dart';
 
 
-class ShoppingListWithProducts extends StatefulWidget {
+
+
+class ShoppingListWithProducts extends StatelessWidget {
 
   final ShoppingList list;
   final Function onPressedAddButton;
@@ -14,20 +18,7 @@ class ShoppingListWithProducts extends StatefulWidget {
   const ShoppingListWithProducts({@required this.list, @required this.onPressedAddButton, @required this.onPressedRemoveButton, @required this.onPressedQrButton, @required this.onPressedProductsButton});
 
   @override
-  _ShoppingListWithProductsState createState() => _ShoppingListWithProductsState();
-
-}
-class _ShoppingListWithProductsState extends State<ShoppingListWithProducts> {
-
-
-  @override
   Widget build(BuildContext context) {
-
-    final ShoppingList list = widget.list;
-    final Function onPressedAddButton = widget.onPressedAddButton;
-    final Function onPressedRemoveButton = widget.onPressedRemoveButton;
-    final Function onPressedQrButton = widget.onPressedQrButton;
-    final Function onPressedProductsButton = widget.onPressedProductsButton;
 
     return Container(
         color: Colors.white,
@@ -43,12 +34,14 @@ class _ShoppingListWithProductsState extends State<ShoppingListWithProducts> {
                       child: GestureDetector(
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
-                          child: Text(
-                            list.listName,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: BlocBuilder<ShoppingListBloc, ShoppingListState>(
+                            builder: (context, state) {
+                              return Text(
+                                (state is ShoppingListAvailable)? list.listName : "Loading lists info",
+                                style: TextStyle(fontWeight: FontWeight.bold)
+                              );
+                            }
+                          )
                         ),
                         onTap: onPressedProductsButton,
                       )
@@ -73,36 +66,48 @@ class _ShoppingListWithProductsState extends State<ShoppingListWithProducts> {
                   )
                 ],
               ),
-              ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: list.getProducts().length,
-                  itemBuilder: (context, index){
-                    Product product = list.getProducts()[index];
-                    return Card(
-                      child: Row(
-                        children: [
-                          Text(
-                            product.getName(),
-                            style: TextStyle(
-                              fontStyle: FontStyle.italic,
-                            ),
-                          ),
-                          IconButton(
-                              icon: Icon(Icons.remove),
-                              onPressed:(){
-                                setState(() {
-                                  list.removeProduct(product);
-                                });
-                              }
+              BlocBuilder<ShoppingListBloc, ShoppingListState>(
+                builder: (context, state) {
+                  if(state is ShoppingListAvailable){
+                    return ListView.builder(
+                      scrollDirection: Axis.vertical,
+                      shrinkWrap: true,
+                      itemCount: list.getProducts().length,
+                      itemBuilder: (context, index){
+                        Product product = list.getProducts()[index];
+                        return Card(
+                          child: Row(
+                            children: [
+                              Text(product.getName(),
+                                style: TextStyle(fontStyle: FontStyle.italic),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.remove),
+                                onPressed:(){
+                                  BlocProvider.of<ShoppingListBloc>(context).add(RemoveProductOfList(list: list, productToRemove: product));
+                                }
+                              )
+                            ]
                           )
-                        ],
-                      ),
+                        );
+                      }
                     );
                   }
+                  else {
+                    return Row(
+                      children: [
+                        Text("Loading lists info",
+                          style: TextStyle(fontWeight: FontWeight.bold)
+                        )
+                      ],
+                    );
+                  }
+                }
+
               )
-            ]
-        )
+            ],
+        ),
     );
   }
+
 }

@@ -9,11 +9,11 @@ class ShoppingListsRouteInformationParser extends RouteInformationParser<Shoppin
     if (uri.pathSegments.length == 0) {
       return ShoppingListsRoutePath.home();
     }
-    // Handle '/list/:listName'
+    // Handle '/list/:listId'
     else if (uri.pathSegments.length == 2) {
       if (uri.pathSegments[0] != 'list') return ShoppingListsRoutePath.error();
-      String listName = uri.pathSegments[1];
-      return ShoppingListsRoutePath.homeWithSharedList(listName);
+      String listId = uri.pathSegments[1];
+      return ShoppingListsRoutePath.homeWithSharedList(listId);
     }
     else return ShoppingListsRoutePath.error();
   }
@@ -27,7 +27,7 @@ class ShoppingListsRouteInformationParser extends RouteInformationParser<Shoppin
       return RouteInformation(location: '/');
     }
     if (path.isHomeWithSharedList) {
-      return RouteInformation(location: '/list/${path.listName}');
+      return RouteInformation(location: '/list/${path.listId}');
     }
     if (path.isCatalog){
       return RouteInformation(location: '/catalog');

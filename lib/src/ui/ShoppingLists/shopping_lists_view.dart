@@ -6,17 +6,16 @@ import 'package:market_categories_bloc/src/models/models.dart';
 import 'package:market_categories_bloc/src/ui/ShoppingLists/shopping_list_view.dart';
 
 class ShoppingListsView extends StatelessWidget {
-  final String sharedListName;
+  final String sharedListId;
   final Function onPressedCatalogButton;
 
   const ShoppingListsView(
-      {@required this.sharedListName, @required this.onPressedCatalogButton});
+      {@required this.sharedListId, @required this.onPressedCatalogButton});
 
   @override
   Widget build(BuildContext context) {
-    if (sharedListName != null)
-      BlocProvider.of<ShoppingListsBloc>(context)
-          .add(CreateList(listName: sharedListName));
+    if (sharedListId != null) BlocProvider.of<ShoppingListsBloc>(context).add(AddList(listId: sharedListId));
+      //BlocProvider.of<ShoppingListsBloc>(context).add(CreateList(listName: sharedListName));
 
     return Scaffold(
         resizeToAvoidBottomInset: false,
@@ -39,7 +38,7 @@ class ShoppingListsView extends StatelessWidget {
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
             final newListName =
-                await _getNewListName(context /*, shoppingListsBloc*/) ?? '';
+                await _getNewListName(context) ?? '';
             if (newListName != "") {
               BlocProvider.of<ShoppingListsBloc>(context)
                   .add(CreateList(listName: newListName.toString()));

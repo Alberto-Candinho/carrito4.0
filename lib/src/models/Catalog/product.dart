@@ -2,13 +2,25 @@ import 'package:flutter/foundation.dart';
 
 class Product {
 
-  final String name;
-  final String description;
-  final String brand;
-  final double unitPrice;
+  String id;
+  String name;
+  String description;
+  String brand;
+  double unitPrice;
   bool _isSelected = false;
 
-  Product({@required this.name, @required this.description, @required this.brand, @required this.unitPrice});
+  Product({@required this.id, @required this.name, @required this.description, @required this.brand, @required this.unitPrice});
+
+  Product.fromProductJson(Map<String, dynamic> parsedJson){
+    for (int index = 0; index < parsedJson["info"].length; index++) {
+      var productJson = Map<String, dynamic>.from(parsedJson["info"][index]);
+      this.id = productJson["id"].toString();
+      this.name = productJson["nome"];
+      this.description = productJson["descripcion"];
+      this.brand = productJson["brand"];
+      this.unitPrice = productJson["prezo"];
+    }
+  }
 
   String getName(){
     return this.name;
@@ -24,10 +36,6 @@ class Product {
 
   double getPrice(){
     return this.unitPrice;
-  }
-
-  String toString(){
-    return this.name + " " + this.brand + "\n" + this.description + "\n" + this.unitPrice.toString() + "\n";
   }
 
   void setIsSelected(bool isSelected){

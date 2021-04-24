@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:market_categories_bloc/src/blocs/blocs.dart';
 import 'package:market_categories_bloc/src/models/models.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share/share.dart';
@@ -30,12 +32,14 @@ class ShoppingListWithQR extends StatelessWidget {
                       child: GestureDetector(
                         child: SingleChildScrollView(
                           scrollDirection: Axis.horizontal,
-                          child: Text(
-                            list.listName,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                          child: BlocBuilder<ShoppingListBloc, ShoppingListState>(
+                                builder: (context, state) {
+                                  return Text(
+                                      (state is ShoppingListAvailable)? list.listName : "Loading lists info",
+                                      style: TextStyle(fontWeight: FontWeight.bold)
+                                  );
+                                }
+                            )
                         ),
                         onTap: onPressedProductsButton,
                       )

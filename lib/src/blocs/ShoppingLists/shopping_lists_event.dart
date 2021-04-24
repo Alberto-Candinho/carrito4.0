@@ -7,14 +7,6 @@ abstract class ShoppingListsEvent extends Equatable {
 
 class CreateList extends ShoppingListsEvent{
 
-  /*final ShoppingList list;
-
-  const CreateList({@required this.list});
-
-  @override
-  List<Object> get props => [list];
-*/
-
   final String listName;
 
   const CreateList({@required this.listName});
@@ -34,14 +26,13 @@ class RemoveList extends ShoppingListsEvent{
 
 }
 
-class AddProductsToList extends ShoppingListsEvent{
+class AddList extends ShoppingListsEvent{
 
-  final ShoppingList list;
-  final List<Product> productsToAdd;
+  final String listId;
 
-  const AddProductsToList({this.list, this.productsToAdd});
+  const AddList({@required this.listId});
 
   @override
-  List<Object> get props => [list, productsToAdd];
+  List<Object> get props => [listId];
 
 }

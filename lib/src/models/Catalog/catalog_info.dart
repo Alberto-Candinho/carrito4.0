@@ -14,7 +14,7 @@ class CatalogInfo extends Equatable {
   CatalogInfo.fromProductsJson(Map<String, dynamic> parsedJson) {
     for (int index = 0; index < parsedJson["products"].length; index++) {
       var productJson = Map<String, dynamic>.from(parsedJson["products"][index]);
-      _currentInfo.add(new Product(name: productJson["nome"], description: productJson["descripcion"], brand: productJson["marca"], unitPrice: productJson["prezo"]));
+      _currentInfo.add(new Product(id: productJson["id"].toString(), name: productJson["nome"], description: productJson["descripcion"], brand: productJson["marca"], unitPrice: productJson["prezo"]));
     }
   }
 

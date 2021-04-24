@@ -1,5 +1,4 @@
-import 'dart:async';
-import 'dart:io';
+import 'package:market_categories_bloc/src/models/models.dart';
 import 'package:market_categories_bloc/src/mqtt/MQTTAppState.dart';
 import 'package:mqtt_client/mqtt_client.dart';
 import 'package:mqtt_client/mqtt_server_client.dart';
@@ -8,11 +7,14 @@ class MQTTManager {
   //Instancias do cliente
   MQTTAppState _currentState;
   MqttServerClient _client;
+
   String _id;
   String _host;
 
+  final Function _onMessageCallback;
+
   //Constructor
-  MQTTManager(this._host, this._id, this._currentState);
+  MQTTManager(this._host, this._id, this._currentState, this._onMessageCallback);
 
   void initMQTTClient() {
     _client = MqttServerClient(_host, _id);
@@ -32,16 +34,27 @@ class MQTTManager {
     print("[MQTT] Mosquito client connecting ...");
   }
 
-  void connect() async {
+  Future<void> connect() async {
     assert(_client != null);
     try {
       print("[MQTT] Client connecting ...");
       _currentState.setAppConnectionState(MQTTAppConnectionState.connecting);
       await _client.connect();
+      _client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
+        final MqttPublishMessage message = c[0].payload;
+        final payload = MqttPublishPayload.bytesToStringAsString(message.payload.message);
+        _currentState.setReceivedText(payload);
+        print('Received message:$payload from topic: ${c[0].topic}>');
+        _onMessageCallback(c[0].topic, payload);
+      });
     } on Exception catch (e) {
       print("[MQTT] Client error => $e");
       disconnect();
     }
+  }
+
+  MQTTAppState getCurrentState(){
+    return _currentState;
   }
 
   void disconnect() {
@@ -49,26 +62,22 @@ class MQTTManager {
     _client.disconnect();
   }
 
-  void subscribe(String topic) {
-    _client.subscribe(topic, MqttQos.atLeastOnce);
-    _client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
-      final MqttPublishMessage message = c[0].payload;
-      final payload =
-          MqttPublishPayload.bytesToStringAsString(message.payload.message);
-      _currentState.setReceivedText(payload);
-      print('Received message:$payload from topic: ${c[0].topic}>');
-    });
+  void subscribe(String listId){
+    _client.subscribe(listId, MqttQos.atLeastOnce);
   }
 
-  void publish(String topic, String message) {
+  void unsubscribe(String listId){
+    _client.unsubscribe(listId);
+  }
+
+  void publish(ShoppingList list) {
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
-    builder.addString(message);
-    _client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload,
-        retain: true);
+    //builder.addString(list.getProductsIds().toString());
+    builder.addString(list.toJson());
+    _client.publishMessage(list.listId, MqttQos.exactlyOnce, builder.payload, retain: true);
   }
 
   //handlers
-
   void onSubscribed(String topic) {
     print("[MQTT] Client subcribed to $topic");
   }
@@ -82,4 +91,5 @@ class MQTTManager {
     _currentState.setAppConnectionState(MQTTAppConnectionState.connected);
     print("[MQTT] Client connected ...");
   }
+
 }

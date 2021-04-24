@@ -1,14 +1,17 @@
 import 'package:flutter/foundation.dart';
 import '../models.dart';
+import 'dart:convert';
+
 
 class ShoppingList {
   String listName;
   String listId;
+  bool _subscribed;
   List<Product> _products = [];
 
-  ShoppingList.withId({@required this.listName, @required this.listId});
+  ShoppingList.withName({@required this.listName, @required this.listId}) : _subscribed = false;
 
-  ShoppingList({@required this.listName});
+  ShoppingList({@required this.listId}) : _subscribed = false, listName = listId;
 
   void addProduct(Product product){
     _products.add(product);
@@ -18,20 +21,41 @@ class ShoppingList {
     _products.remove(product);
   }
 
+  void setProducts(List<Product> newProducts){
+    this._products = newProducts;
+  }
+
   List<Product> getProducts(){
     return this._products;
   }
 
-  /*Future<String> getId() async{
-    String macAddress;
-    try{
-      macAddress = await GetMac.macAddress;
-      return macAddress + "_" + listName;
-    } on PlatformException {
-      print("Platform exception: Failed to generate id of list");
-      return "";
-    }
-  }*/
+
+  void setSubscribed(bool subscribed){
+    this._subscribed = subscribed;
+  }
+
+  bool isSubscribed(){
+    return this._subscribed;
+  }
+
+  String toJson(){
+    Map<String, dynamic> listJson= {
+      "nome" : this.listName,
+      "productos" : this.getProductsIds()
+    };
+    return json.encode(listJson);
+
+  }
+
+  List<String> getProductsIds(){
+    List<String> productsIds = [];
+    for(Product product in _products) productsIds.add(product.id);
+    return productsIds;
+
+  }
+
+
+
 
 
 }
