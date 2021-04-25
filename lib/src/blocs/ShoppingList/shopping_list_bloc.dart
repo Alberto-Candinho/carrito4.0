@@ -33,11 +33,8 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
   
   Stream<ShoppingListState> _mapAddProductsToListToState(ShoppingList list, List<Product> productsToAdd) async* {
     yield ShoppingListLoading();
-    for(Product product in productsToAdd){
-      list.addProduct(product);
-    }
-
-    mqttManager.publish(list);
+    for(Product product in productsToAdd) list.addProduct(product);
+    mqttManager.publish(list.listId, list.toJson());
 
     yield ShoppingListAvailable();
   }
@@ -45,7 +42,7 @@ class ShoppingListBloc extends Bloc<ShoppingListEvent, ShoppingListState> {
   Stream<ShoppingListState> _mapRemoveProductOfListToState(ShoppingList list, Product productToRemove) async* {
     yield ShoppingListLoading();
     list.removeProduct(productToRemove);
-    mqttManager.publish(list);
+    mqttManager.publish(list.listId, list.toJson());
     yield ShoppingListAvailable();
 
   }

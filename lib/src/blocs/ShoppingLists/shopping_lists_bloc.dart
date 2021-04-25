@@ -61,8 +61,9 @@ class ShoppingListsBloc extends Bloc<ShoppingListsEvent, ShoppingListsState> {
     if(mqttManager.getCurrentState().getAppConnectionState == MQTTAppConnectionState.connected){
       try{
         mqttManager.subscribe(newList.listId);
+        mqttManager.subscribe(newList.listId + "/trolley");
         newList.setSubscribed(true);
-        mqttManager.publish(newList);
+        mqttManager.publish(newList.listId, newList.toJson());
       } on Exception catch (e) {
         print("[MQTT] Couldn't subscribe to list ${newList.listId} => $e");
 
@@ -84,7 +85,7 @@ class ShoppingListsBloc extends Bloc<ShoppingListsEvent, ShoppingListsState> {
     prefs.setStringList("saved_lists", currentLists);
 
     list.setProducts([]);
-    mqttManager.publish(list);
+    mqttManager.publish(list.listId, list.toJson());
     yield ShoppingListsAvailable(shoppingLists);
 
   }
@@ -92,25 +93,28 @@ class ShoppingListsBloc extends Bloc<ShoppingListsEvent, ShoppingListsState> {
   Stream<ShoppingListsState> _mapAddListToState(String listId) async* {
     yield ShoppingListsLoading();
 
-    SharedPreferences prefs = await sharedPreferences;
-    List<String> currentLists = [];
-    ShoppingList newList;
+    if(!shoppingLists.hasListWithId(listId)) {
+      SharedPreferences prefs = await sharedPreferences;
+      List<String> currentLists = [];
+      ShoppingList newList;
 
-    newList = new ShoppingList(listId: listId);
-    shoppingLists.addList(newList);
+      newList = new ShoppingList(listId: listId);
+      shoppingLists.addList(newList);
 
-    //Saving current lists in shared preferences
-    for(ShoppingList list in shoppingLists.props) currentLists.add(list.listId);
-    prefs.setStringList("saved_lists", currentLists);
+      //Saving current lists in shared preferences
+      for (ShoppingList list in shoppingLists.props)
+        currentLists.add(list.listId);
+      prefs.setStringList("saved_lists", currentLists);
 
-    //Subscribe to this list topic
-    if(mqttManager.getCurrentState().getAppConnectionState == MQTTAppConnectionState.connected){
-      try{
-        mqttManager.subscribe(newList.listId);
-        newList.setSubscribed(true);
-      } on Exception catch (e) {
-        print("[MQTT] Couldn't subscribe to list ${newList.listId} => $e");
-
+      //Subscribe to this list topic
+      if (mqttManager.getCurrentState().getAppConnectionState == MQTTAppConnectionState.connected) {
+        try {
+          mqttManager.subscribe(newList.listId);
+          mqttManager.subscribe(newList.listId + "/trolley");
+          newList.setSubscribed(true);
+        } on Exception catch (e) {
+          print("[MQTT] Couldn't subscribe to list ${newList.listId} => $e");
+        }
       }
     }
 

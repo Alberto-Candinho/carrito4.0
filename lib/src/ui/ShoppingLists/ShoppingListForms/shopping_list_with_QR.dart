@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:market_categories_bloc/src/blocs/blocs.dart';
 import 'package:market_categories_bloc/src/models/models.dart';
+import 'package:market_categories_bloc/src/ui/ShoppingLists/ShoppingListForms/shopping_list_in_trolley.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:share/share.dart';
 
@@ -64,8 +65,17 @@ class ShoppingListWithQR extends StatelessWidget {
                   )
                 ],
               ),
-              QrImage(
-                data: list.listName,
+              /*QrImage(
+                data: list.listId,
+              )*/
+              BlocBuilder<TrolleyBloc, TrolleyState> (
+                  builder: (context, state){
+                    if(state is Unconnected)
+                      return QrImage(data: list.listId);
+                    else{
+                      return ShoppingListInTrolley(list: list, trolley: state.props[0]);
+                    }
+                  }
               )
             ]
         )

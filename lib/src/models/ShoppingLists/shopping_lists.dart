@@ -15,6 +15,11 @@ class ShoppingLists extends Equatable {
     _shoppingLists.remove(list);
   }
 
+  bool hasListWithId(String listId){
+    for(ShoppingList list in _shoppingLists) if(list.listId == listId) return true;
+    return false;
+  }
+
   @override
   List<ShoppingList> get props => _shoppingLists;
 

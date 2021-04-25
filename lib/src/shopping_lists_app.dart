@@ -24,8 +24,10 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
 
   final MarketRepository _repository = new MarketRepository(new MarketClient(), new MarketCache());
   final ShoppingLists _shoppingLists = new ShoppingLists();
+  final Trolley _trolley = new Trolley();
   Future<SharedPreferences> _prefs = SharedPreferences.getInstance();
 
+  TrolleyBloc _trolleyBloc;
   ShoppingListBloc _shoppingListBloc;
   ShoppingListsBloc _shoppingListsBloc;
   CategoriesBloc _categoriesBloc;
@@ -39,6 +41,7 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
     _shoppingListBloc = new ShoppingListBloc(mqttManager: _manager);
     _categoriesBloc = new CategoriesBloc(marketRepository: _repository);
     _productsBloc = new ProductsBloc(marketRepository: _repository);
+    _trolleyBloc = new TrolleyBloc(trolley: _trolley, marketRepository: _repository);
     getSavedLists();
     _manager.connect().then((value) => _subscribeToLists()).onError((error, stackTrace) => print("[MQTT] Couldn't connect to broker"));
   }
@@ -64,6 +67,9 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
       ),
       BlocProvider<ShoppingListBloc>(
         create: (_) => _shoppingListBloc,
+      ),
+      BlocProvider<TrolleyBloc>(
+        create: (_) => _trolleyBloc
       )
     ], child: ShoppingListsRouter());
   }
@@ -78,26 +84,58 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
 
   void _onReceivedMqttMessage(String messageTopic, String messagePayload){
     for(ShoppingList list in _shoppingLists.props){
-      if(list.listId == messageTopic) _processMqttMessage(list, messagePayload);
+      if(list.listId == messageTopic) _processListMessage(list, messagePayload);
+      else if(list.listId + "/trolley" == messageTopic) _processTrolleyMessage(list, messagePayload);
     }
 
   }
 
-  void _processMqttMessage(ShoppingList affectedList, String messagePayload){
+  void _processTrolleyMessage(ShoppingList list, String messagePayload){
+    if(messagePayload == "conexion establecida"){
+      _trolleyBloc.add(LoadListProducts(listProducts: list.getProducts()));
+      list.setInTrolley(true);
+    }
+    else{
+      var trolleyInfo = Map<String, dynamic>.from(json.decode(messagePayload));
+      if(trolleyInfo.containsKey("engadir")){
+        String receivedProductId = trolleyInfo["engadir"].toString();
+        _trolleyBloc.add(NewProduct(productId: receivedProductId));
+      }
+      else if(trolleyInfo.containsKey("sacar")){
+        String receivedProductId = trolleyInfo["sacar"].toString();
+        _trolleyBloc.add(RemovedProduct(productId: receivedProductId));
+      }
+    }
+  }
+
+  void _processListMessage(ShoppingList affectedList, String messagePayload) async {
     var listInfo = Map<String, dynamic>.from(json.decode(messagePayload));
     String receivedListName = listInfo["nome"].toString();
-    List<String> receivedProductsIdsList = List<String>.from(listInfo["productos"]);
-    if(receivedProductsIdsList.toString() != affectedList.getProductsIds().toString()){
+    List<String> receivedProductsIds = List<String>.from(listInfo["productos"]);
+    List<String> currentProductsIds = affectedList.getProductsIds();
+    print("[${affectedList.listName}] Mensaxe mqtt recibido. Nome de lista recibido: $receivedListName. Productos recibidos: ${receivedProductsIds.toString()}");
+    if(receivedProductsIds.toString() != currentProductsIds.toString()){
       List<Product> newProducts = [];
-      for(int index = 0; index < receivedProductsIdsList.length; index++){
-        Future<Product> newProduct = _repository.getProductInfo(receivedProductsIdsList[index].toString());
-        newProduct.then((value) => newProducts.add(value)).onError((error, stackTrace) => print("Couldn't find info for product with id=" + receivedProductsIdsList[index]));
+      List<Future<Product>> futureProducts = [];
+      for(String receivedProductId in receivedProductsIds){
+        if(currentProductsIds.contains(receivedProductId)){
+          newProducts.add(affectedList.getProductById(receivedProductId));
+        }
+        else{
+          Future<Product> futureProduct = _repository.getProductInfo(receivedProductId);
+          futureProducts.add(futureProduct);
+        }
+      }
+      for(Future<Product> futureProduct in futureProducts){
+        Product newProduct = await futureProduct;
+        newProducts.add(newProduct);
       }
       _shoppingListBloc.add(SetProductsToList(list: affectedList, productsSet: newProducts));
-
+      if(affectedList.isInTrolley()) _trolleyBloc.add(LoadListProducts(listProducts: newProducts));
     }
     if(receivedListName != affectedList.listName) _shoppingListBloc.add(RenameList(list: affectedList, newName: receivedListName));
   }
+
 
   void initMQTT() async {
     _manager = MQTTManager("carrito4.duckdns.org", "test1", _currentAppState, _onReceivedMqttMessage);
@@ -109,6 +147,7 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
       if(!list.isSubscribed()){
         try{
           _manager.subscribe(list.listId);
+          _manager.subscribe(list.listId + "/trolley");
           list.setSubscribed(true);
         } on Exception catch (e) {
           print("[MQTT] Couldn't subscribe to list ${list.listId} => $e");

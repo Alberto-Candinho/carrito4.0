@@ -62,19 +62,19 @@ class MQTTManager {
     _client.disconnect();
   }
 
-  void subscribe(String listId){
-    _client.subscribe(listId, MqttQos.atLeastOnce);
+  void subscribe(String topic){
+    _client.subscribe(topic, MqttQos.atLeastOnce);
   }
 
   void unsubscribe(String listId){
     _client.unsubscribe(listId);
   }
 
-  void publish(ShoppingList list) {
+  void publish(String topic, String message_payload) {
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     //builder.addString(list.getProductsIds().toString());
-    builder.addString(list.toJson());
-    _client.publishMessage(list.listId, MqttQos.exactlyOnce, builder.payload, retain: true);
+    builder.addString(message_payload);
+    _client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload, retain: true);
   }
 
   //handlers
