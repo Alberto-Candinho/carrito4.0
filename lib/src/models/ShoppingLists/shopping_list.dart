@@ -14,7 +14,7 @@ class ShoppingList {
 
   ShoppingList({@required this.listId}) : _subscribed = false, listName = listId, inTrolley = false;
 
-  ShoppingList.withInTrolleyBool({@required this.listId, @required this.inTrolley}) : _subscribed = false, listName = listId;
+  ShoppingList.inTrolley({@required this.listId}) : _subscribed = false, listName = listId, inTrolley = true;
 
   bool isInTrolley(){
     return inTrolley;

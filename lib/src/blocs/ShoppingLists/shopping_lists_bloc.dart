@@ -35,6 +35,9 @@ class ShoppingListsBloc extends Bloc<ShoppingListsEvent, ShoppingListsState> {
     else if(event is AddList){
       yield* _mapAddListToState(event.listId);
     }
+    else if(event is AddListInTrolley){
+      yield* _mapAddListInTrolleyToState(event.listId);
+    }
 
   }
 
@@ -77,15 +80,18 @@ class ShoppingListsBloc extends Bloc<ShoppingListsEvent, ShoppingListsState> {
   Stream<ShoppingListsState> _mapRemoveListToState(ShoppingList list) async* {
     yield ShoppingListsLoading();
 
-    SharedPreferences prefs = await sharedPreferences;
-    List<String> currentLists = [];
+    if(!list.isInTrolley()) {
+      SharedPreferences prefs = await sharedPreferences;
+      List<String> currentLists = [];
 
-    shoppingLists.removeList(list);
-    for(ShoppingList list in shoppingLists.props) currentLists.add(list.listId);
-    prefs.setStringList("saved_lists", currentLists);
+      shoppingLists.removeList(list);
+      for (ShoppingList list in shoppingLists.props)
+        currentLists.add(list.listId);
+      prefs.setStringList("saved_lists", currentLists);
 
-    list.setProducts([]);
-    mqttManager.publish(list.listId, list.toJson());
+      list.setProducts([]);
+      mqttManager.publish(list.listId, list.toJson());
+    }
     yield ShoppingListsAvailable(shoppingLists);
 
   }
@@ -99,6 +105,39 @@ class ShoppingListsBloc extends Bloc<ShoppingListsEvent, ShoppingListsState> {
       ShoppingList newList;
 
       newList = new ShoppingList(listId: listId);
+      shoppingLists.addList(newList);
+
+      //Saving current lists in shared preferences
+      for (ShoppingList list in shoppingLists.props)
+        currentLists.add(list.listId);
+      prefs.setStringList("saved_lists", currentLists);
+
+      //Subscribe to this list topic
+      if (mqttManager.getCurrentState().getAppConnectionState == MQTTAppConnectionState.connected) {
+        try {
+          mqttManager.subscribe(newList.listId);
+          mqttManager.subscribe(newList.listId + "/trolley");
+          newList.setSubscribed(true);
+        } on Exception catch (e) {
+          print("[MQTT] Couldn't subscribe to list ${newList.listId} => $e");
+        }
+      }
+    }
+
+    yield ShoppingListsAvailable(shoppingLists);
+
+
+  }
+
+  Stream<ShoppingListsState> _mapAddListInTrolleyToState(String listId) async* {
+    yield ShoppingListsLoading();
+
+    if(!shoppingLists.hasListWithId(listId)) {
+      SharedPreferences prefs = await sharedPreferences;
+      List<String> currentLists = [];
+      ShoppingList newList;
+
+      newList = new ShoppingList.inTrolley(listId: listId);
       shoppingLists.addList(newList);
 
       //Saving current lists in shared preferences

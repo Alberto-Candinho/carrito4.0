@@ -31,12 +31,41 @@ class TrolleyBloc extends Bloc<TrolleyEvent, TrolleyState> {
     else if(event is NewProduct){
       yield* _mapNewProductToState(event.productId, event.quantity);
     }
+    else if(event is NewProductsInList){
+      yield* _mapNewProductsInListToState(event.newProducts);
+    }
+    else if(event is RemovedProductsInList){
+      yield* _mapRemovedProductsInListToState(event.removedProducts);
+    }
 
+  }
+
+  Stream<TrolleyState> _mapNewProductsInListToState(List<Product> newProducts) async* {
+    yield TrolleyLoading(trolley);
+    List<String> productIds = [];
+    for(Product newProduct in newProducts) productIds.add(newProduct.id);
+    for(TrolleyItem trolleyItem in trolley.getTrolleyItems()){
+      if(productIds.contains(trolleyItem.product.id)) trolleyItem.setFromList(true);
+    }
+    for(Product product in newProducts){
+      if(!trolley.containsProduct(product)) trolley.addTrolleyItem(new TrolleyItem(product: product, fromList: true));
+    }
+    yield CurrentTrolleyContent(trolley);
+  }
+
+  Stream<TrolleyState> _mapRemovedProductsInListToState(List<Product> removedProducts) async* {
+    yield TrolleyLoading(trolley);
+    List<String> productIds = [];
+    for(Product removedProduct in removedProducts) productIds.add(removedProduct.id);
+    for(TrolleyItem trolleyItem in trolley.getTrolleyItems()){
+      if(productIds.contains(trolleyItem.product.id)) trolleyItem.setFromList(false);
+    }
+    yield CurrentTrolleyContent(trolley);
   }
 
   Stream<TrolleyState> _mapLoadListToState(List<Product> products, String listId) async* {
     yield TrolleyLoading(trolley);
-    //if(!list.isInTrolley()) list.setInTrolley(true);
+
     for(Product product in products){
       if(!trolley.containsProduct(product)) trolley.addTrolleyItem(new TrolleyItem(product: product, fromList: true));
       else{
@@ -45,9 +74,16 @@ class TrolleyBloc extends Bloc<TrolleyEvent, TrolleyState> {
       }
     }
 
+    List<String> productIds = [];
+    for(Product product in products) productIds.add(product.id);
+    for(TrolleyItem trolleyItem in trolley.getTrolleyItems()){
+      if(trolleyItem.isFromList() && !productIds.contains(trolleyItem.product.id)) trolleyItem.setFromList(false);
+    }
+
     //Saving current list in trolley in shared preferences
     SharedPreferences prefs = await sharedPreferences;
     if(!(prefs.containsKey("listInTrolley") && prefs.getString("listInTrolley") == listId)) prefs.setString("listInTrolley", listId);
+    _saveTrolleyState();
     yield CurrentTrolleyContent(trolley);
   }
 

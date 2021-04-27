@@ -85,6 +85,7 @@ class ShoppingListWithProducts extends StatelessWidget {
                                 icon: Icon(Icons.remove),
                                 onPressed:(){
                                   BlocProvider.of<ShoppingListBloc>(context).add(RemoveProductOfList(list: list, productToRemove: product));
+                                  if(list.isInTrolley()) BlocProvider.of<TrolleyBloc>(context).add(RemovedProductsInList(removedProducts: [product]));
                                 }
                               )
                             ]

@@ -37,3 +37,25 @@ class NewProduct extends TrolleyEvent{
   List<Object> get props => [productId];
 
 }
+
+class NewProductsInList extends TrolleyEvent{
+
+  final List<Product> newProducts;
+
+  const NewProductsInList({@required this.newProducts});
+
+  @override
+  List<Object> get props => [newProducts];
+
+}
+
+class RemovedProductsInList extends TrolleyEvent{
+
+  final List<Product> removedProducts;
+
+  const RemovedProductsInList({@required this.removedProducts});
+
+  @override
+  List<Object> get props => [removedProducts];
+
+}

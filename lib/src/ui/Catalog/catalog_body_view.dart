@@ -59,6 +59,7 @@ class _CatalogProductsView extends StatelessWidget {
                           }
                         }
                         BlocProvider.of<ShoppingListBloc>(context).add(AddProductsToList(list: list, productsToAdd: productsToAdd));
+                        if(list.isInTrolley()) BlocProvider.of<TrolleyBloc>(context).add(NewProductsInList(newProducts: productsToAdd));
                       }
                   )
                 ],

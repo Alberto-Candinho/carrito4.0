@@ -36,3 +36,15 @@ class AddList extends ShoppingListsEvent{
   List<Object> get props => [listId];
 
 }
+
+class AddListInTrolley extends ShoppingListsEvent{
+
+  final String listId;
+
+  const AddListInTrolley({@required this.listId});
+
+  @override
+  List<Object> get props => [listId];
+
+}
+

@@ -82,19 +82,20 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
   }
   void getSavedLists(SharedPreferences prefs) async {
     List<String> savedLists = prefs.containsKey("saved_lists") ? prefs.getStringList("saved_lists") : [];
+    if(prefs.containsKey("listInTrolley")){
+      String listInTrolley = prefs.getString("listInTrolley");
+      for(String listId in savedLists){
+        if(listId != listInTrolley)_shoppingListsBloc.add(AddList(listId: listId));
+        else _shoppingListsBloc.add(AddListInTrolley(listId: listId));
+      }
+    }
+    else{
+      for(String listId in savedLists) _shoppingListsBloc.add(AddList(listId: listId));
+    }
 
-    for(String listId in savedLists) _shoppingListsBloc.add(AddList(listId: listId));
   }
 
   void getSavedTrolley(SharedPreferences prefs) async {
-    if(prefs.containsKey("listInTrolley")){
-      String listId = prefs.getString("listInTrolley");
-      ShoppingList listInTrolley = _shoppingLists.getListFromId(listId);
-      listInTrolley.setInTrolley(true);
-      if(listInTrolley != null) _trolleyBloc.add(LoadList(listProducts: listInTrolley.getProducts(), listId: listInTrolley.listId));
-
-      else print("[Trolley] Erro. Habia unha lista cargada no carro que xa non existe na aplicación");
-    }
     if(prefs.containsKey("products_in_trolley") && prefs.containsKey("quantities_in_trolley")){
       List<String> productsIds = prefs.getStringList("products_in_trolley");
       List<String> quantities = prefs.getStringList("quantities_in_trolley");
