@@ -7,9 +7,11 @@ class Product {
   String description;
   String brand;
   double unitPrice;
+  double discount;
+  bool granel;
   bool _isSelected = false;
 
-  Product({@required this.id, @required this.name, @required this.description, @required this.brand, @required this.unitPrice});
+  Product({@required this.id, @required this.name, @required this.description, @required this.brand, @required this.unitPrice, @required this.discount, @required this.granel});
 
   Product.fromProductJson(Map<String, dynamic> parsedJson){
     for (int index = 0; index < parsedJson["info"].length; index++) {
@@ -19,6 +21,8 @@ class Product {
       this.description = productJson["descripcion"];
       this.brand = productJson["brand"];
       this.unitPrice = productJson["prezo"];
+      this.discount = productJson["desconto"];
+      this.granel = productJson["granel"];
     }
   }
 

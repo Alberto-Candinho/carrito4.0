@@ -15,7 +15,7 @@ class TrolleyItem {
   }
 
   double getPrice(){
-    return this.quantity * this.product.unitPrice;
+    return this.quantity * this.product.unitPrice * (1 - this.product.discount);
   }
 
   bool isFromList(){

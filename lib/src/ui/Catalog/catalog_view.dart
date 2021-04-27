@@ -16,7 +16,7 @@ class CatalogInfoView extends StatelessWidget {
   Widget build(BuildContext context) {
 
     BlocProvider.of<CategoriesBloc>(context).add(LoadCategories());
-
+    BlocProvider.of<ProductsBloc>(context).add(LoadProducts(productsEndpoint: "Ofertas"));
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
