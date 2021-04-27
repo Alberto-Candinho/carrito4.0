@@ -17,9 +17,8 @@ class ShoppingListInTrolley extends StatelessWidget {
         itemCount: trolley.getTrolleyItems().length,
         itemBuilder: (context, index){
           TrolleyItem itemInTrolley = trolley.getTrolleyItemByIndex(index);
-          Product product = itemInTrolley.product;
           Color cardColor;
-          if(list.hasProduct(product)){
+          if(itemInTrolley.isFromList()){
             (itemInTrolley.quantity > 0)? cardColor = Colors.greenAccent: cardColor = Colors.white;
           }
           else cardColor = Colors.green;

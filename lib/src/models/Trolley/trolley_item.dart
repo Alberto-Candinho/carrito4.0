@@ -5,7 +5,7 @@ class TrolleyItem {
 
   final Product product;
   int quantity;
-  final bool fromList;
+  bool fromList;
 
   TrolleyItem({@required this.product, @required this.fromList}) : quantity = 0;
 
@@ -20,6 +20,10 @@ class TrolleyItem {
 
   bool isFromList(){
     return fromList;
+  }
+
+  void setFromList(bool fromList){
+    this.fromList = fromList;
   }
 
 
