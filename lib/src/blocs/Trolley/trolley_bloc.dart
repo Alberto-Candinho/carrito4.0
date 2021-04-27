@@ -25,8 +25,11 @@ class TrolleyBloc extends Bloc<TrolleyEvent, TrolleyState> {
     if (event is LoadList) {
       yield* _mapLoadListToState(event.listProducts, event.listId);
     }
+    else if(event is LoadStoredTrolley) {
+      yield* _mapLoadStoredTrolleyToState(event.productIds, event.quantities);
+    }
     else if(event is RemovedProduct){
-      yield* _mapRemovedProductToState(event.productId);
+      yield* _mapRemovedProductToState(event.productId, event.quantity);
     }
     else if(event is NewProduct){
       yield* _mapNewProductToState(event.productId, event.quantity);
@@ -38,6 +41,24 @@ class TrolleyBloc extends Bloc<TrolleyEvent, TrolleyState> {
       yield* _mapRemovedProductsInListToState(event.removedProducts);
     }
 
+  }
+
+  Stream<TrolleyState> _mapLoadStoredTrolleyToState(List<String> productIds, List<String> quantities) async*{
+    yield TrolleyLoading(trolley);
+    for(int index = 0; index < productIds.length; index++){
+      String productId = productIds[index];
+      double quantity = double.parse(quantities[index]);
+      TrolleyItem trolleyItem = trolley.getTrolleyItem(productId);
+      if(trolleyItem == null){
+        Future<Product> newProduct = marketRepository.getProductInfo(productId);
+        Product product = await newProduct;
+        trolleyItem = new TrolleyItem(product: product, fromList: false);
+        trolleyItem.add(quantity);
+      }
+      else trolleyItem.add(quantity);
+    }
+    _saveTrolleyState();
+    yield CurrentTrolleyContent(trolley);
   }
 
   Stream<TrolleyState> _mapNewProductsInListToState(List<Product> newProducts) async* {
@@ -87,11 +108,12 @@ class TrolleyBloc extends Bloc<TrolleyEvent, TrolleyState> {
     yield CurrentTrolleyContent(trolley);
   }
 
-  Stream<TrolleyState> _mapRemovedProductToState(String productId) async* {
+  Stream<TrolleyState> _mapRemovedProductToState(String productId, double quantity) async* {
     yield TrolleyLoading(trolley);
     TrolleyItem trolleyItem = trolley.getTrolleyItem(productId);
     if(trolleyItem != null && trolleyItem.quantity > 0){
-      trolleyItem.add(-1);
+      if(trolleyItem.product.aGranel())trolleyItem.add(quantity);
+      else trolleyItem.add(-1);
       if(!trolleyItem.isFromList() && trolleyItem.quantity == 0) trolley.removeTrolleyItem(trolleyItem);
 
     }
@@ -104,16 +126,20 @@ class TrolleyBloc extends Bloc<TrolleyEvent, TrolleyState> {
 
   }
 
-  Stream<TrolleyState> _mapNewProductToState(String productId, int quantity) async* {
+  Stream<TrolleyState> _mapNewProductToState(String productId, double quantity) async* {
     yield TrolleyLoading(trolley);
     TrolleyItem trolleyItem = trolley.getTrolleyItem(productId);
-    if(trolleyItem != null) trolleyItem.add(1);
+    if(trolleyItem != null){
+      if(trolleyItem.product.aGranel()) trolleyItem.add(quantity);
+      else trolleyItem.add(1);
+    }
     else{
       print("[TROLLEY] Engadiuse un producto que non estaba na lista. Procedese a obter a información do mesmo na web");
       Future<Product> newProduct = marketRepository.getProductInfo(productId);
       Product product = await newProduct;
       trolleyItem = new TrolleyItem(product: product, fromList: false);
-      trolleyItem.add(quantity);
+      if(product.aGranel()) trolleyItem.add(quantity);
+      else trolleyItem.add(1);
       trolley.addTrolleyItem(trolleyItem);
 
     }
@@ -124,6 +150,8 @@ class TrolleyBloc extends Bloc<TrolleyEvent, TrolleyState> {
 
 
   }
+
+
 
   void _saveTrolleyState() async{
     List<String> currentProducts = [];

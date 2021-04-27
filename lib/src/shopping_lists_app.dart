@@ -101,7 +101,7 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
       List<String> quantities = prefs.getStringList("quantities_in_trolley");
       if(productsIds.length == quantities.length){
         for(int index = 0; index < productsIds.length; index++)
-          _trolleyBloc.add(NewProduct(productId: productsIds[index], quantity: int.parse(quantities[index])));
+          _trolleyBloc.add(NewProduct(productId: productsIds[index], quantity: double.parse(quantities[index])));
       }
       else print("[Trolley] Erro. Non hai a mesma cantidade de productos almacenados que de cantidades dos mesmos");
     }
@@ -126,11 +126,14 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
       var trolleyInfo = Map<String, dynamic>.from(json.decode(messagePayload));
       if (trolleyInfo.containsKey("engadir")) {
         String receivedProductId = trolleyInfo["engadir"].toString();
-        _trolleyBloc.add(NewProduct(productId: receivedProductId, quantity: 1));
+        double quantity = double.parse(trolleyInfo["cantidade"].toString());
+        //_trolleyBloc.add(NewProduct(productId: receivedProductId, quantity: 1));
+        _trolleyBloc.add(NewProduct(productId: receivedProductId, quantity: quantity));
       }
       else if (trolleyInfo.containsKey("sacar")) {
         String receivedProductId = trolleyInfo["sacar"].toString();
-        _trolleyBloc.add(RemovedProduct(productId: receivedProductId));
+        double quantity = double.parse(trolleyInfo["cantidade"].toString());
+        _trolleyBloc.add(RemovedProduct(productId: receivedProductId, quantity: quantity));
       }
     }catch(e){print(e);}
   }

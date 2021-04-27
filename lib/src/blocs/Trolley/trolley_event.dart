@@ -18,8 +18,9 @@ class LoadList extends TrolleyEvent{
 class RemovedProduct extends TrolleyEvent{
 
   final String productId;
+  final double quantity;
 
-  const RemovedProduct({this.productId});
+  const RemovedProduct({this.productId, this.quantity});
 
   @override
   List<Object> get props => [productId];
@@ -29,7 +30,7 @@ class RemovedProduct extends TrolleyEvent{
 class NewProduct extends TrolleyEvent{
 
   final String productId;
-  final int quantity;
+  final double quantity;
 
   const NewProduct({@required this.productId, @required this.quantity});
 
@@ -57,5 +58,17 @@ class RemovedProductsInList extends TrolleyEvent{
 
   @override
   List<Object> get props => [removedProducts];
+
+}
+
+class LoadStoredTrolley extends TrolleyEvent{
+
+  final List<String> productIds;
+  final List<String> quantities;
+
+  const LoadStoredTrolley({@required this.productIds, @required this.quantities});
+
+  @override
+  List<Object> get props => [productIds, quantities];
 
 }

@@ -50,4 +50,8 @@ class Product {
     return this._isSelected;
   }
 
+  bool aGranel(){
+    return this.granel;
+  }
+
 }
