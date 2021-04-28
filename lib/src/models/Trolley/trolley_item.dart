@@ -17,6 +17,7 @@ class TrolleyItem {
   void add(double quantity){
     this.quantity = this.quantity + quantity;
     this.quantity = (this.quantity < 0)? 0: this.quantity;
+
   }
 
   double getPrice(){

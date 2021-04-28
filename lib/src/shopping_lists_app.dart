@@ -95,7 +95,18 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
 
   }
 
-  void getSavedTrolley(SharedPreferences prefs) async {
+  void getSavedTrolley(SharedPreferences prefs) async{
+    if(prefs.containsKey("products_in_trolley") && prefs.containsKey("quantities_in_trolley")){
+      List<String> productIds = prefs.getStringList("products_in_trolley");
+      List<String> quantities = prefs.getStringList("quantities_in_trolley");
+      if(productIds.length == quantities.length){
+        _trolleyBloc.add(LoadStoredTrolley(productIds: productIds, quantities: quantities));
+      }
+      else print("[Trolley] Erro. Non hai a mesma cantidade de productos almacenados que de cantidades dos mesmos");
+    }
+  }
+
+  /*void getSavedTrolley(SharedPreferences prefs) async {
     if(prefs.containsKey("products_in_trolley") && prefs.containsKey("quantities_in_trolley")){
       List<String> productsIds = prefs.getStringList("products_in_trolley");
       List<String> quantities = prefs.getStringList("quantities_in_trolley");
@@ -106,7 +117,7 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
       else print("[Trolley] Erro. Non hai a mesma cantidade de productos almacenados que de cantidades dos mesmos");
     }
 
-  }
+  }*/
 
   void _onReceivedMqttMessage(String messageTopic, String messagePayload){
     for(ShoppingList list in _shoppingLists.props){

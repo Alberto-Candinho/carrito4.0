@@ -48,14 +48,19 @@ class TrolleyBloc extends Bloc<TrolleyEvent, TrolleyState> {
     for(int index = 0; index < productIds.length; index++){
       String productId = productIds[index];
       double quantity = double.parse(quantities[index]);
+      print("Cantidade almacenada para o producto: " + quantity.toString());
       TrolleyItem trolleyItem = trolley.getTrolleyItem(productId);
       if(trolleyItem == null){
         Future<Product> newProduct = marketRepository.getProductInfo(productId);
         Product product = await newProduct;
         trolleyItem = new TrolleyItem(product: product, fromList: false);
         trolleyItem.add(quantity);
+        trolley.addTrolleyItem(trolleyItem);
       }
-      else trolleyItem.add(quantity);
+      else{
+        trolleyItem.add(quantity);
+        trolley.addTrolleyItem(trolleyItem);
+      }
     }
     _saveTrolleyState();
     yield CurrentTrolleyContent(trolley);
@@ -79,7 +84,9 @@ class TrolleyBloc extends Bloc<TrolleyEvent, TrolleyState> {
     List<String> productIds = [];
     for(Product removedProduct in removedProducts) productIds.add(removedProduct.id);
     for(TrolleyItem trolleyItem in trolley.getTrolleyItems()){
-      if(productIds.contains(trolleyItem.product.id)) trolleyItem.setFromList(false);
+      if(productIds.contains(trolleyItem.product.id)){
+        (trolleyItem.quantity >0)? trolleyItem.setFromList(false): trolley.removeTrolleyItem(trolleyItem);
+      }
     }
     yield CurrentTrolleyContent(trolley);
   }
@@ -98,7 +105,9 @@ class TrolleyBloc extends Bloc<TrolleyEvent, TrolleyState> {
     List<String> productIds = [];
     for(Product product in products) productIds.add(product.id);
     for(TrolleyItem trolleyItem in trolley.getTrolleyItems()){
-      if(trolleyItem.isFromList() && !productIds.contains(trolleyItem.product.id)) trolleyItem.setFromList(false);
+      if(trolleyItem.isFromList() && !productIds.contains(trolleyItem.product.id)){
+        (trolleyItem.quantity >0)? trolleyItem.setFromList(false): trolley.removeTrolleyItem(trolleyItem);
+      }
     }
 
     //Saving current list in trolley in shared preferences
