@@ -9,7 +9,6 @@ part 'products_event.dart';
 part 'products_state.dart';
 
 class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
-
   List<Product> currentSelectedProducts = [];
   final MarketRepository marketRepository;
 
@@ -17,16 +16,16 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
 
   @override
   Stream<ProductsState> mapEventToState(ProductsEvent event) async* {
-    if(event is LoadProducts){
+    if (event is LoadProducts) {
       yield* _mapLoadToState(event.productsEndpoint);
     }
-
   }
 
   Stream<ProductsState> _mapLoadToState(String productsEndpoint) async* {
     yield LoadingProducts();
     try {
-      final CatalogInfo newInfo = await marketRepository.getCatalogProducts(productsEndpoint);
+      final CatalogInfo newInfo =
+          await marketRepository.getCatalogProducts(productsEndpoint);
       currentSelectedProducts = newInfo.props[0].cast<Product>();
       yield ProductsLoaded(currentSelectedProducts);
     } catch (e, stacktrace) {
@@ -35,5 +34,4 @@ class ProductsBloc extends Bloc<ProductsEvent, ProductsState> {
       yield ErrorLoadingProducts();
     }
   }
-
 }

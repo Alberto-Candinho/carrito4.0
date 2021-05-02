@@ -7,58 +7,94 @@ import 'package:market_categories_bloc/src/models/models.dart';
 import 'package:market_categories_bloc/src/ui/views.dart';
 
 class CatalogInfoView extends StatelessWidget {
-
   final ShoppingList list;
 
   const CatalogInfoView({@required this.list});
 
   @override
   Widget build(BuildContext context) {
-
     BlocProvider.of<CategoriesBloc>(context).add(LoadCategories());
 
     return Scaffold(
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        leading: BackButton()
-      ),
-      body: ColoredBox(
-          color: Colors.yellow,
-          child: Column(
-              children: [
-                Container(
-                  height: 250,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Container(
-                        height: 125,
-                        width: 300,
-                        child: Column(
-                          children: [
-                            Text("\n\n\nCATALOGO",
-                              style: TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                            SingleChildScrollView(
-                              scrollDirection: Axis.horizontal,
-                              child: Text(list.listName, style: TextStyle(fontStyle: FontStyle.italic),
-                              ),
-                            ),
-                          ],
-                        )
-                      ),
-                      CatalogHeaderView()
-                    ],
-                  )
-                ),
-                CatalogBodyView(list: list)
-              ]
-          )
-      ),
-
-    );
+        backgroundColor: Color(0xFFf3f3f3),
+        extendBodyBehindAppBar: true,
+        appBar: AppBar(
+            backgroundColor: Color(0xFF5bb580),
+            elevation: 0,
+            leading: BackButton()),
+        body: Stack(children: [
+          Container(
+            height: double.infinity,
+            color: Colors.transparent,
+            margin: const EdgeInsets.only(top: 150, left: 10.0, right: 10.0),
+            child: CatalogBodyView(list: list),
+          ),
+          Container(
+              alignment: Alignment(0, 0.0),
+              decoration: BoxDecoration(
+                  color: Color(0xFF5bb580),
+                  border: Border.all(
+                    color: Color(0xFF5bb580),
+                  ),
+                  borderRadius: BorderRadius.all(Radius.circular(25))),
+              height: 220,
+              width: double.infinity,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  SizedBox(height: 80),
+                  Text(
+                    "CATALOGO",
+                    style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 25,
+                        fontWeight: FontWeight.bold),
+                  ),
+                  Text(
+                    list.listName.toUpperCase(),
+                    style: TextStyle(
+                        fontStyle: FontStyle.italic, color: Colors.white70),
+                  ),
+                  SizedBox(height: 25),
+                  CatalogHeaderView()
+                ],
+              )),
+        ]));
   }
 }
+//       body: ColoredBox(
+//           color: Colors.yellow,
+//           child: Column(children: [
+//             Container(
+//                 height: 250,
+//                 child: Column(
+//                   mainAxisAlignment: MainAxisAlignment.center,
+//                   crossAxisAlignment: CrossAxisAlignment.center,
+//                   children: [
+//                     Container(
+//                         height: 125,
+//                         width: 300,
+//                         child: Column(
+//                           children: [
+//                             Text(
+//                               "\n\n\nCATALOGO",
+//                               style: TextStyle(fontWeight: FontWeight.bold),
+//                             ),
+//                             SingleChildScrollView(
+//                               scrollDirection: Axis.horizontal,
+//                               child: Text(
+//                                 list.listName,
+//                                 style: TextStyle(fontStyle: FontStyle.italic),
+//                               ),
+//                             ),
+//                           ],
+//                         )),
+//                     CatalogHeaderView()
+//                   ],
+//                 )),
+//             CatalogBodyView(list: list)
+//           ])),
+//     );
+//   }
+// }

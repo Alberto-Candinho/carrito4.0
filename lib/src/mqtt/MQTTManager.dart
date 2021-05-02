@@ -14,13 +14,14 @@ class MQTTManager {
   final Function _onMessageCallback;
 
   //Constructor
-  MQTTManager(this._host, this._id, this._currentState, this._onMessageCallback);
+  MQTTManager(
+      this._host, this._id, this._currentState, this._onMessageCallback);
 
   void initMQTTClient() {
     _client = MqttServerClient(_host, _id);
     _client.port = 80; //1883;
     _client.keepAlivePeriod = 20;
-    _client.logging(on: true);
+    _client.logging(on: false);
     //hadlers
     _client.onDisconnected = onDisconnected;
     _client.onConnected = onConnected;
@@ -42,7 +43,8 @@ class MQTTManager {
       await _client.connect();
       _client.updates.listen((List<MqttReceivedMessage<MqttMessage>> c) {
         final MqttPublishMessage message = c[0].payload;
-        final payload = MqttPublishPayload.bytesToStringAsString(message.payload.message);
+        final payload =
+            MqttPublishPayload.bytesToStringAsString(message.payload.message);
         _currentState.setReceivedText(payload);
         print('Received message:$payload from topic: ${c[0].topic}>');
         _onMessageCallback(c[0].topic, payload);
@@ -53,7 +55,7 @@ class MQTTManager {
     }
   }
 
-  MQTTAppState getCurrentState(){
+  MQTTAppState getCurrentState() {
     return _currentState;
   }
 
@@ -62,11 +64,11 @@ class MQTTManager {
     _client.disconnect();
   }
 
-  void subscribe(String topic){
+  void subscribe(String topic) {
     _client.subscribe(topic, MqttQos.atLeastOnce);
   }
 
-  void unsubscribe(String listId){
+  void unsubscribe(String listId) {
     _client.unsubscribe(listId);
   }
 
@@ -74,7 +76,8 @@ class MQTTManager {
     final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
     //builder.addString(list.getProductsIds().toString());
     builder.addString(message_payload);
-    _client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload, retain: true);
+    _client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload,
+        retain: true);
   }
 
   //handlers
@@ -91,5 +94,4 @@ class MQTTManager {
     _currentState.setAppConnectionState(MQTTAppConnectionState.connected);
     print("[MQTT] Client connected ...");
   }
-
 }

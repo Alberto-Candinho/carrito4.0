@@ -14,8 +14,10 @@ class ShoppingListsView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    if (sharedListId != null) BlocProvider.of<ShoppingListsBloc>(context).add(AddList(listId: sharedListId));
-      //BlocProvider.of<ShoppingListsBloc>(context).add(CreateList(listName: sharedListName));
+    if (sharedListId != null)
+      BlocProvider.of<ShoppingListsBloc>(context)
+          .add(AddList(listId: sharedListId));
+    //BlocProvider.of<ShoppingListsBloc>(context).add(CreateList(listName: sharedListName));
 
     return Scaffold(
         resizeToAvoidBottomInset: false,
@@ -37,8 +39,7 @@ class ShoppingListsView extends StatelessWidget {
             ])),
         floatingActionButton: FloatingActionButton(
           onPressed: () async {
-            final newListName =
-                await _getNewListName(context) ?? '';
+            final newListName = await _getNewListName(context) ?? '';
             if (newListName != "") {
               BlocProvider.of<ShoppingListsBloc>(context)
                   .add(CreateList(listName: newListName.toString()));

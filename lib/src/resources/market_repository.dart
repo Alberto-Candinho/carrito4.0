@@ -15,10 +15,10 @@ class MarketRepository {
   Future<CatalogInfo> getCatalogCategories() async {
     if (marketCache.contains(categoriesEndpoint)) {
       return marketCache.get(categoriesEndpoint);
-    }
-    else {
+    } else {
       final result = await marketClient.sendRequest(categoriesEndpoint);
-      final catalogInfo = CatalogInfo.fromCategoriesJson(json.decode(result.body));
+      final catalogInfo =
+          CatalogInfo.fromCategoriesJson(json.decode(result.body));
       marketCache.set(categoriesEndpoint, catalogInfo);
       return catalogInfo;
     }
@@ -26,27 +26,32 @@ class MarketRepository {
 
   Future<CatalogInfo> getCatalogProducts(String productsEndpoint) async {
     if (marketCache.contains(categoriesEndpoint + productsEndpoint)) {
+      print("EN CACHE");
       return marketCache.get(categoriesEndpoint + productsEndpoint);
-    }
-    else {
-      final result = await marketClient.sendRequest(categoriesEndpoint + productsEndpoint);
-      final catalogInfo = CatalogInfo.fromProductsJson(json.decode(result.body));
+    } else {
+      final result =
+          await marketClient.sendRequest(categoriesEndpoint + productsEndpoint);
+      print(json.decode(result.body));
+      final catalogInfo =
+          CatalogInfo.fromProductsJson(json.decode(result.body));
+
+      for (Product product in catalogInfo.props[0]) {
+        print("PRECIO OBTIDO DO PRODUCTO: " + product.getPrice().toString());
+      }
       marketCache.set(categoriesEndpoint + productsEndpoint, catalogInfo);
       return catalogInfo;
     }
   }
 
   Future<Product> getProductInfo(String productId) async {
-    if(marketCache.contains(productInfoEndpoint + productId)) {
+    if (marketCache.contains(productInfoEndpoint + productId)) {
       return marketCache.get(productInfoEndpoint + productId);
-    }
-    else {
-      final result = await marketClient.sendRequest(productInfoEndpoint + productId);
+    } else {
+      final result =
+          await marketClient.sendRequest(productInfoEndpoint + productId);
       final product = Product.fromProductJson(json.decode(result.body));
       marketCache.set(productInfoEndpoint + productId, product);
       return product;
     }
   }
-
-
 }

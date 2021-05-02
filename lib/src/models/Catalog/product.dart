@@ -1,49 +1,58 @@
 import 'package:flutter/foundation.dart';
 
 class Product {
-
   String id;
   String name;
   String description;
   String brand;
+  String image;
   double unitPrice;
   bool _isSelected = false;
 
-  Product({@required this.id, @required this.name, @required this.description, @required this.brand, @required this.unitPrice});
+  Product(
+      {@required this.id,
+      @required this.name,
+      @required this.description,
+      @required this.brand,
+      @required this.unitPrice});
 
-  Product.fromProductJson(Map<String, dynamic> parsedJson){
+  Product.fromProductJson(Map<String, dynamic> parsedJson) {
     for (int index = 0; index < parsedJson["info"].length; index++) {
       var productJson = Map<String, dynamic>.from(parsedJson["info"][index]);
       this.id = productJson["id"].toString();
       this.name = productJson["nome"];
       this.description = productJson["descripcion"];
       this.brand = productJson["brand"];
-      this.unitPrice = productJson["prezo"];
+      this.unitPrice = productJson["precio"];
     }
   }
 
-  String getName(){
+  String getName() {
     return this.name;
   }
 
-  String getDescription(){
+  String getDescription() {
     return this.description;
   }
 
-  String getBrand(){
+  String getBrand() {
     return this.brand;
   }
 
-  double getPrice(){
+  String getImage() {
+    return this.image;
+  }
+
+  double getPrice() {
+    print("PRECIO" + this.unitPrice.toString());
     return this.unitPrice;
   }
 
-  void setIsSelected(bool isSelected){
+  void setIsSelected(bool isSelected) {
     this._isSelected = isSelected;
   }
 
-  bool isSelected(){
+  bool isSelected() {
     return this._isSelected;
   }
-
 }
