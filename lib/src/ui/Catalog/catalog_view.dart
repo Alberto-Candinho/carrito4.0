@@ -63,38 +63,3 @@ class CatalogInfoView extends StatelessWidget {
         ]));
   }
 }
-//       body: ColoredBox(
-//           color: Colors.yellow,
-//           child: Column(children: [
-//             Container(
-//                 height: 250,
-//                 child: Column(
-//                   mainAxisAlignment: MainAxisAlignment.center,
-//                   crossAxisAlignment: CrossAxisAlignment.center,
-//                   children: [
-//                     Container(
-//                         height: 125,
-//                         width: 300,
-//                         child: Column(
-//                           children: [
-//                             Text(
-//                               "\n\n\nCATALOGO",
-//                               style: TextStyle(fontWeight: FontWeight.bold),
-//                             ),
-//                             SingleChildScrollView(
-//                               scrollDirection: Axis.horizontal,
-//                               child: Text(
-//                                 list.listName,
-//                                 style: TextStyle(fontStyle: FontStyle.italic),
-//                               ),
-//                             ),
-//                           ],
-//                         )),
-//                     CatalogHeaderView()
-//                   ],
-//                 )),
-//             CatalogBodyView(list: list)
-//           ])),
-//     );
-//   }
-// }

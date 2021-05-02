@@ -17,6 +17,7 @@ class ProductView extends StatefulWidget {
 class _ProductState extends State<ProductView> {
   @override
   Widget build(BuildContext context) {
+    print(widget.product.getName());
     return Container(
       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 20),
       width: 45,
@@ -40,13 +41,6 @@ class _ProductState extends State<ProductView> {
               alignment: Alignment.topRight,
               child: InkWell(
                   onTap: () {
-                    //   setState(() {
-                    //     widget.product
-                    //         .setIsSelected(!widget.product.isSelected());
-                    //   });
-                    print("Quero engador o producto " +
-                        widget.product.id.toString() +
-                        widget.product.unitPrice.toString());
                     BlocProvider.of<ShoppingListBloc>(context).add(
                         AddProductsToList(
                             list: widget.list,
@@ -92,15 +86,15 @@ class _ProductState extends State<ProductView> {
               child: Container(
                 alignment: Alignment(-0.2, 0),
                 color: Colors.transparent,
-                width: 50,
-                height: 42,
+                width: 55,
+                height: 40,
                 child: Text(
                   widget.product.getPrice().toString() + "€",
                   style: TextStyle(
                       fontFamily: 'Roboto',
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
-                      fontSize: 18),
+                      fontSize: 17),
                 ),
               ))
         ],

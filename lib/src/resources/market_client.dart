@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:http/http.dart' as Http;
 
 class MarketClient {
-  final String server_direction = "http://172.20.10.2:8090/";
+  final String server_direction = "http://192.168.1.145:8090/";
 
   Future<Http.Response> sendRequest(String endpoint) async {
     Uri uri = Uri.parse(server_direction + endpoint);

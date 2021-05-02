@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:market_categories_bloc/src/models/models.dart';
+import 'package:market_categories_bloc/src/ui/payment_view.dart';
 
 class ShoppingListInTrolley extends StatelessWidget {
   final ShoppingList list;
@@ -38,7 +39,10 @@ class ShoppingListInTrolley extends StatelessWidget {
           primary: Color(0xFF006b1d),
         ),
         onPressed: () {
-          // Respond to button press
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => CreditCardPage()),
+          );
         },
         icon: Icon(Icons.payment, size: 18),
         label: Text(
