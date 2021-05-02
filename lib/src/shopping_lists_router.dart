@@ -8,15 +8,16 @@ class ShoppingListsRouter extends StatefulWidget {
 
 class _ShoppingListsRouterState extends State<ShoppingListsRouter> {
   ShoppingListsRouterDelegate _routerDelegate = ShoppingListsRouterDelegate();
-  ShoppingListsRouteInformationParser _routeInformationParser = ShoppingListsRouteInformationParser();
+  ShoppingListsRouteInformationParser _routeInformationParser =
+      ShoppingListsRouteInformationParser();
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp.router(
+      debugShowCheckedModeBanner: false,
       title: 'Shopping Lists App',
       routerDelegate: _routerDelegate,
       routeInformationParser: _routeInformationParser,
     );
   }
-
 }
