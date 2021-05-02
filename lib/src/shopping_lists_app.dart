@@ -44,9 +44,11 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
     _shoppingListBloc = new ShoppingListBloc(mqttManager: _manager);
     _categoriesBloc = new CategoriesBloc(marketRepository: _repository);
     _productsBloc = new ProductsBloc(marketRepository: _repository);
-    _trolleyBloc =
-        new TrolleyBloc(trolley: _trolley, marketRepository: _repository);
-    getSavedLists();
+    _trolleyBloc = new TrolleyBloc(
+        trolley: _trolley,
+        marketRepository: _repository,
+        sharedPreferences: _prefs);
+    readSharedPreferences();
     _manager.connect().then((value) => _subscribeToLists()).onError(
         (error, stackTrace) => print("[MQTT] Couldn't connect to broker"));
   }
@@ -78,14 +80,47 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
     ], child: ShoppingListsRouter());
   }
 
-  Future<void> getSavedLists() async {
+  Future<void> readSharedPreferences() async {
     final SharedPreferences prefs = await _prefs;
+    getSavedLists(prefs);
+    getSavedTrolley(prefs);
+  }
+
+  void getSavedLists(SharedPreferences prefs) async {
     List<String> savedLists = prefs.containsKey("saved_lists")
         ? prefs.getStringList("saved_lists")
         : [];
 
     for (String listId in savedLists)
       _shoppingListsBloc.add(AddList(listId: listId));
+  }
+
+  void getSavedTrolley(SharedPreferences prefs) async {
+    if (prefs.containsKey("listInTrolley")) {
+      String listId = prefs.getString("listInTrolley");
+      ShoppingList listInTrolley = _shoppingLists.getListFromId(listId);
+      listInTrolley.setInTrolley(true);
+      if (listInTrolley != null)
+        _trolleyBloc.add(LoadList(
+            listProducts: listInTrolley.getProducts(),
+            listId: listInTrolley.listId));
+      else
+        print(
+            "[Trolley] Erro. Habia unha lista cargada no carro que xa non existe na aplicación");
+    }
+    if (prefs.containsKey("products_in_trolley") &&
+        prefs.containsKey("quantities_in_trolley")) {
+      List<String> productsIds = prefs.getStringList("products_in_trolley");
+      List<String> quantities = prefs.getStringList("quantities_in_trolley");
+      if (productsIds.length == quantities.length) {
+        for (int index = 0; index < productsIds.length; index++)
+          _trolleyBloc.add(NewProduct(
+              productId: productsIds[index],
+              quantity: int.parse(quantities[index])));
+      } else
+        print(
+            "[Trolley] Erro. Non hai a mesma cantidade de productos almacenados que de cantidades dos mesmos");
+    }
   }
 
   void _onReceivedMqttMessage(String messageTopic, String messagePayload) {
@@ -98,18 +133,22 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
   }
 
   void _processTrolleyMessage(ShoppingList list, String messagePayload) {
-    if (messagePayload == "conexion establecida") {
-      _trolleyBloc.add(LoadListProducts(listProducts: list.getProducts()));
+    if (!list.isInTrolley()) {
       list.setInTrolley(true);
-    } else {
+      _trolleyBloc
+          .add(LoadList(listProducts: list.getProducts(), listId: list.listId));
+    }
+    try {
       var trolleyInfo = Map<String, dynamic>.from(json.decode(messagePayload));
       if (trolleyInfo.containsKey("engadir")) {
         String receivedProductId = trolleyInfo["engadir"].toString();
-        _trolleyBloc.add(NewProduct(productId: receivedProductId));
+        _trolleyBloc.add(NewProduct(productId: receivedProductId, quantity: 1));
       } else if (trolleyInfo.containsKey("sacar")) {
         String receivedProductId = trolleyInfo["sacar"].toString();
         _trolleyBloc.add(RemovedProduct(productId: receivedProductId));
       }
+    } catch (e) {
+      print(e);
     }
   }
 
@@ -125,9 +164,9 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
       List<Product> newProducts = [];
       List<Future<Product>> futureProducts = [];
       for (String receivedProductId in receivedProductsIds) {
-        if (currentProductsIds.contains(receivedProductId)) {
+        if (currentProductsIds.contains(receivedProductId))
           newProducts.add(affectedList.getProductById(receivedProductId));
-        } else {
+        else {
           Future<Product> futureProduct =
               _repository.getProductInfo(receivedProductId);
           futureProducts.add(futureProduct);
@@ -140,7 +179,8 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
       _shoppingListBloc
           .add(SetProductsToList(list: affectedList, productsSet: newProducts));
       if (affectedList.isInTrolley())
-        _trolleyBloc.add(LoadListProducts(listProducts: newProducts));
+        _trolleyBloc.add(
+            LoadList(listProducts: newProducts, listId: affectedList.listId));
     }
     if (receivedListName != affectedList.listName)
       _shoppingListBloc

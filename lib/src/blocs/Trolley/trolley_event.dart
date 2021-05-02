@@ -5,14 +5,14 @@ abstract class TrolleyEvent extends Equatable {
   const TrolleyEvent();
 }
 
-class LoadListProducts extends TrolleyEvent{
+class LoadList extends TrolleyEvent{
 
   final List<Product> listProducts;
-
-  const LoadListProducts({@required this.listProducts});
+  final String listId;
+  const LoadList({@required this.listProducts, @required this.listId});
 
   @override
-  List<Object> get props => [listProducts];
+  List<Object> get props => [listProducts, listId];
 }
 
 class RemovedProduct extends TrolleyEvent{
@@ -29,8 +29,9 @@ class RemovedProduct extends TrolleyEvent{
 class NewProduct extends TrolleyEvent{
 
   final String productId;
+  final int quantity;
 
-  const NewProduct({@required this.productId});
+  const NewProduct({@required this.productId, @required this.quantity});
 
   @override
   List<Object> get props => [productId];

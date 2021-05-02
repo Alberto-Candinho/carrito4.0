@@ -7,19 +7,21 @@ class ShoppingList {
   String listName;
   String listId;
   bool _subscribed;
-  bool _inTrolley;
+  bool inTrolley;
   List<Product> _products = [];
 
-  ShoppingList.withName({@required this.listName, @required this.listId}) : _subscribed = false, _inTrolley = false;
+  ShoppingList.withName({@required this.listName, @required this.listId}) : _subscribed = false, inTrolley = false;
 
-  ShoppingList({@required this.listId}) : _subscribed = false, listName = listId, _inTrolley = false;
+  ShoppingList({@required this.listId}) : _subscribed = false, listName = listId, inTrolley = false;
+
+  ShoppingList.withInTrolleyBool({@required this.listId, @required this.inTrolley}) : _subscribed = false, listName = listId;
 
   bool isInTrolley(){
-    return _inTrolley;
+    return inTrolley;
   }
 
   void setInTrolley(bool inTrolley){
-    this._inTrolley = inTrolley;
+    this.inTrolley = inTrolley;
   }
 
   void addProduct(Product product){

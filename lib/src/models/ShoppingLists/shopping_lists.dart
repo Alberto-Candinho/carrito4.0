@@ -20,6 +20,11 @@ class ShoppingLists extends Equatable {
     return false;
   }
 
+  ShoppingList getListFromId(String listId){
+    for(ShoppingList list in _shoppingLists) if(list.listId == listId) return list;
+    return null;
+  }
+
   @override
   List<ShoppingList> get props => _shoppingLists;
 
