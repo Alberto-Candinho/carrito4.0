@@ -14,7 +14,7 @@ class CatalogInfoView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     BlocProvider.of<CategoriesBloc>(context).add(LoadCategories());
-
+    BlocProvider.of<ProductsBloc>(context).add(LoadProducts(productsEndpoint: "Ofertas"));
     return Scaffold(
         backgroundColor: Color(0xFFf3f3f3),
         extendBodyBehindAppBar: true,

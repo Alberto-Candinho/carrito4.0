@@ -38,6 +38,8 @@ class ShoppingListsBloc extends Bloc<ShoppingListsEvent, ShoppingListsState> {
       yield* _mapAddListToState(event.listId);
     } else if (event is AddListInTrolley) {
       yield* _mapAddListInTrolleyToState(event.listId);
+    } else if (event is AddListInTrolley) {
+      yield* _mapAddListInTrolleyToState(event.listId);
     }
   }
 

@@ -128,6 +128,7 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
       }
       else print("[Trolley] Erro. Non hai a mesma cantidade de productos almacenados que de cantidades dos mesmos");
     }
+
   }*/
 
   void _onReceivedMqttMessage(String messageTopic, String messagePayload) {

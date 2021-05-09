@@ -8,10 +8,6 @@ class TrolleyItem {
 
   TrolleyItem({@required this.product, @required this.fromList}) : quantity = 0;
 
-  /*void add(int quantity){
-    this.quantity = this.quantity + quantity;
-  }*/
-
   void add(double quantity) {
     this.quantity = this.quantity + quantity;
     this.quantity = (this.quantity < 0) ? 0 : this.quantity;

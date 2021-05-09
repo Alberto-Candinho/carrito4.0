@@ -17,8 +17,8 @@ class Product {
       @required this.imaxe,
       @required this.description,
       @required this.brand,
-      @required this.discount,
       @required this.unitPrice,
+      @required this.discount,
       @required this.granel});
 
   Product.fromProductJson(Map<String, dynamic> parsedJson) {

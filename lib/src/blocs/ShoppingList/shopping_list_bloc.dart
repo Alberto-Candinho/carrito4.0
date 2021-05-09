@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:market_categories_bloc/src/models/ShoppingLists/shopping_list.dart';
 import 'package:market_categories_bloc/src/mqtt/MQTTManager.dart';
 import 'package:meta/meta.dart';
