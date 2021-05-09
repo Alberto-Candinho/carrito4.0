@@ -19,6 +19,7 @@ class CatalogInfo extends Equatable {
       _currentInfo.add(new Product(
           id: productJson["id"].toString(),
           name: productJson["nome"],
+          imaxe: productJson["imaxe"],
           description: productJson["descripcion"],
           brand: productJson["marca"],
           unitPrice: productJson["precio"]));

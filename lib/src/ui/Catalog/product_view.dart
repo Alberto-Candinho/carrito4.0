@@ -31,8 +31,8 @@ class _ProductState extends State<ProductView> {
             decoration: BoxDecoration(
               borderRadius: BorderRadius.all(Radius.circular(20.0)),
               image: DecorationImage(
-                image: NetworkImage(
-                    "https://cdn.pixabay.com/photo/2016/04/15/08/04/strawberry-1330459_1280.jpg"),
+                image: NetworkImage(widget.product.getImaxe()),
+                //"https://cdn.pixabay.com/photo/2016/04/15/08/04/strawberry-1330459_1280.jpg"),
                 fit: BoxFit.fitHeight,
               ),
             ),
@@ -67,7 +67,7 @@ class _ProductState extends State<ProductView> {
                   ))),
           Container(
             alignment: Alignment(0, 0),
-            color: Colors.transparent,
+            color: Color(0xFF5bb580).withOpacity(0.5),
             padding: EdgeInsets.all(0.25),
             width: 81,
             height: 46,
@@ -85,7 +85,7 @@ class _ProductState extends State<ProductView> {
               alignment: Alignment.bottomRight,
               child: Container(
                 alignment: Alignment(-0.2, 0),
-                color: Colors.transparent,
+                color: Color(0xFF5bb580),
                 width: 55,
                 height: 40,
                 child: Text(

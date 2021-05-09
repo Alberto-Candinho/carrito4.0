@@ -5,15 +5,18 @@ class Product {
   String name;
   String description;
   String brand;
-  String image;
+  String imaxe;
   double unitPrice;
   bool _isSelected = false;
+  double discount;
 
   Product(
       {@required this.id,
       @required this.name,
+      @required this.imaxe,
       @required this.description,
       @required this.brand,
+      @required this.discount,
       @required this.unitPrice});
 
   Product.fromProductJson(Map<String, dynamic> parsedJson) {
@@ -24,6 +27,8 @@ class Product {
       this.description = productJson["descripcion"];
       this.brand = productJson["brand"];
       this.unitPrice = productJson["precio"];
+      this.imaxe = productJson["imaxe"];
+      this.discount = productJson["desconto"];
     }
   }
 
@@ -39,8 +44,8 @@ class Product {
     return this.brand;
   }
 
-  String getImage() {
-    return this.image;
+  String getImaxe() {
+    return this.imaxe;
   }
 
   double getPrice() {
