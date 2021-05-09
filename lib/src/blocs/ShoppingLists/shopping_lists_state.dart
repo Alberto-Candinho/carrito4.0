@@ -11,7 +11,6 @@ abstract class ShoppingListsState extends Equatable {
 class ShoppingListsLoading extends ShoppingListsState {}
 
 class ShoppingListsAvailable extends ShoppingListsState {
-
   const ShoppingListsAvailable(this.shoppingLists);
 
   final ShoppingLists shoppingLists;
@@ -19,4 +18,3 @@ class ShoppingListsAvailable extends ShoppingListsState {
   @override
   List<Object> get props => [shoppingLists];
 }
-

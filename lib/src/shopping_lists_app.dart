@@ -90,38 +90,45 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
     List<String> savedLists = prefs.containsKey("saved_lists")
         ? prefs.getStringList("saved_lists")
         : [];
-
-    for (String listId in savedLists)
-      _shoppingListsBloc.add(AddList(listId: listId));
+    if (prefs.containsKey("listInTrolley")) {
+      String listInTrolley = prefs.getString("listInTrolley");
+      for (String listId in savedLists) {
+        if (listId != listInTrolley)
+          _shoppingListsBloc.add(AddList(listId: listId));
+        else
+          _shoppingListsBloc.add(AddListInTrolley(listId: listId));
+      }
+    } else {
+      for (String listId in savedLists)
+        _shoppingListsBloc.add(AddList(listId: listId));
+    }
   }
 
   void getSavedTrolley(SharedPreferences prefs) async {
-    if (prefs.containsKey("listInTrolley")) {
-      String listId = prefs.getString("listInTrolley");
-      ShoppingList listInTrolley = _shoppingLists.getListFromId(listId);
-      listInTrolley.setInTrolley(true);
-      if (listInTrolley != null)
-        _trolleyBloc.add(LoadList(
-            listProducts: listInTrolley.getProducts(),
-            listId: listInTrolley.listId));
-      else
-        print(
-            "[Trolley] Erro. Habia unha lista cargada no carro que xa non existe na aplicación");
-    }
     if (prefs.containsKey("products_in_trolley") &&
         prefs.containsKey("quantities_in_trolley")) {
-      List<String> productsIds = prefs.getStringList("products_in_trolley");
+      List<String> productIds = prefs.getStringList("products_in_trolley");
       List<String> quantities = prefs.getStringList("quantities_in_trolley");
-      if (productsIds.length == quantities.length) {
-        for (int index = 0; index < productsIds.length; index++)
-          _trolleyBloc.add(NewProduct(
-              productId: productsIds[index],
-              quantity: int.parse(quantities[index])));
+      if (productIds.length == quantities.length) {
+        _trolleyBloc.add(
+            LoadStoredTrolley(productIds: productIds, quantities: quantities));
       } else
         print(
             "[Trolley] Erro. Non hai a mesma cantidade de productos almacenados que de cantidades dos mesmos");
     }
   }
+
+  /*void getSavedTrolley(SharedPreferences prefs) async {
+    if(prefs.containsKey("products_in_trolley") && prefs.containsKey("quantities_in_trolley")){
+      List<String> productsIds = prefs.getStringList("products_in_trolley");
+      List<String> quantities = prefs.getStringList("quantities_in_trolley");
+      if(productsIds.length == quantities.length){
+        for(int index = 0; index < productsIds.length; index++)
+          _trolleyBloc.add(NewProduct(productId: productsIds[index], quantity: double.parse(quantities[index])));
+      }
+      else print("[Trolley] Erro. Non hai a mesma cantidade de productos almacenados que de cantidades dos mesmos");
+    }
+  }*/
 
   void _onReceivedMqttMessage(String messageTopic, String messagePayload) {
     for (ShoppingList list in _shoppingLists.props) {
@@ -142,10 +149,15 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
       var trolleyInfo = Map<String, dynamic>.from(json.decode(messagePayload));
       if (trolleyInfo.containsKey("engadir")) {
         String receivedProductId = trolleyInfo["engadir"].toString();
-        _trolleyBloc.add(NewProduct(productId: receivedProductId, quantity: 1));
+        double quantity = double.parse(trolleyInfo["cantidade"].toString());
+        //_trolleyBloc.add(NewProduct(productId: receivedProductId, quantity: 1));
+        _trolleyBloc
+            .add(NewProduct(productId: receivedProductId, quantity: quantity));
       } else if (trolleyInfo.containsKey("sacar")) {
         String receivedProductId = trolleyInfo["sacar"].toString();
-        _trolleyBloc.add(RemovedProduct(productId: receivedProductId));
+        double quantity = double.parse(trolleyInfo["cantidade"].toString());
+        _trolleyBloc.add(
+            RemovedProduct(productId: receivedProductId, quantity: quantity));
       }
     } catch (e) {
       print(e);

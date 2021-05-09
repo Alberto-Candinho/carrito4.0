@@ -9,6 +9,7 @@ class Product {
   double unitPrice;
   bool _isSelected = false;
   double discount;
+  bool granel;
 
   Product(
       {@required this.id,
@@ -17,7 +18,8 @@ class Product {
       @required this.description,
       @required this.brand,
       @required this.discount,
-      @required this.unitPrice});
+      @required this.unitPrice,
+      @required this.granel});
 
   Product.fromProductJson(Map<String, dynamic> parsedJson) {
     for (int index = 0; index < parsedJson["info"].length; index++) {
@@ -29,6 +31,7 @@ class Product {
       this.unitPrice = productJson["precio"];
       this.imaxe = productJson["imaxe"];
       this.discount = productJson["desconto"];
+      this.granel = productJson["granel"];
     }
   }
 
@@ -59,5 +62,9 @@ class Product {
 
   bool isSelected() {
     return this._isSelected;
+  }
+
+  bool aGranel() {
+    return this.granel;
   }
 }

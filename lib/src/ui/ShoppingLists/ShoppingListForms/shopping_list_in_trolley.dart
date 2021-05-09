@@ -19,7 +19,7 @@ class ShoppingListInTrolley extends StatelessWidget {
             TrolleyItem itemInTrolley = trolley.getTrolleyItemByIndex(index);
             Product product = itemInTrolley.product;
             Color cardColor;
-            if (list.hasProduct(product)) {
+            if (itemInTrolley.isFromList()) {
               (itemInTrolley.quantity > 0)
                   ? cardColor = Colors.greenAccent
                   : cardColor = Colors.white;
@@ -34,22 +34,35 @@ class ShoppingListInTrolley extends StatelessWidget {
                 ),
                 color: cardColor);
           }),
-      ElevatedButton.icon(
-        style: ElevatedButton.styleFrom(
-          primary: Color(0xFF006b1d),
-        ),
-        onPressed: () {
-          Navigator.push(
-            context,
-            MaterialPageRoute(builder: (context) => CreditCardPage()),
-          );
-        },
-        icon: Icon(Icons.payment, size: 18),
-        label: Text(
-          "PAGAR",
-          //style: TextStyle(color: Color(0xFF006b1d)),
-        ),
-      )
+      Divider(
+        height: 20,
+        thickness: 5,
+        indent: 20,
+        endIndent: 20,
+      ),
+      Row(
+        children: [
+          Text(
+            trolley.getTotalPrice().toString(),
+          ),
+          ElevatedButton.icon(
+            style: ElevatedButton.styleFrom(
+              primary: Color(0xFF006b1d),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => CreditCardPage()),
+              );
+            },
+            icon: Icon(Icons.payment, size: 18),
+            label: Text(
+              "PAGAR",
+              //style: TextStyle(color: Color(0xFF006b1d)),
+            ),
+          )
+        ],
+      ),
     ]);
   }
 }

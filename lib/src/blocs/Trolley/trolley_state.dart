@@ -9,7 +9,6 @@ abstract class TrolleyState extends Equatable {
 }
 
 class TrolleyLoading extends TrolleyState {
-
   final Trolley trolley;
 
   const TrolleyLoading(this.trolley);
@@ -19,7 +18,6 @@ class TrolleyLoading extends TrolleyState {
 }
 
 class CurrentTrolleyContent extends TrolleyState {
-
   final Trolley trolley;
 
   const CurrentTrolleyContent(this.trolley);
