@@ -40,7 +40,7 @@ class ShoppingListInTrolley extends StatelessWidget {
                         child: InkWell(
                             child: Icon(
                               Icons.error,
-                              color: Colors.white70,
+                              color: Colors.white70, //Color(0xFFf1471d),
                             ),
                             onTap: () {
                               ScaffoldMessenger.of(context)
