@@ -62,3 +62,26 @@ class LoadStoredTrolley extends TrolleyEvent {
   @override
   List<Object> get props => [productIds, quantities];
 }
+
+class GetOutOfTrolley extends TrolleyEvent {
+  final ShoppingList list;
+
+  const GetOutOfTrolley({@required this.list});
+
+  @override
+  List<Object> get props => [list];
+}
+
+class NewProductWithError extends TrolleyEvent {
+  final String error;
+  final String productId;
+  final double quantity;
+
+  const NewProductWithError(
+      {@required this.productId,
+      @required this.quantity,
+      @required this.error});
+
+  @override
+  List<Object> get props => [productId, quantity, error];
+}

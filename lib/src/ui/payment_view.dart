@@ -1,23 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_credit_card/credit_card_form.dart';
 import 'package:flutter_credit_card/credit_card_model.dart';
 import 'package:flutter_credit_card/flutter_credit_card.dart';
+import 'package:market_categories_bloc/src/blocs/Trolley/trolley_bloc.dart';
+import 'package:market_categories_bloc/src/models/models.dart';
 
 class CreditCardPage extends StatefulWidget {
+  final ShoppingList lista;
+  CreditCardPage(@required this.lista);
+
   @override
   State<StatefulWidget> createState() {
-    return CreditCardPageState();
+    return CreditCardPageState(lista);
   }
 }
 
 class CreditCardPageState extends State<CreditCardPage> {
+  final ShoppingList lista;
+  CreditCardPageState(this.lista);
   String cardNumber = '';
   String expiryDate = '';
   String cardHolderName = '';
   String cvvCode = '';
   bool isCvvFocused = false;
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -93,7 +100,7 @@ class CreditCardPageState extends State<CreditCardPage> {
                         if (formKey.currentState.validate()) {
                           print('valid!');
                           _showValidDialog(context, "Validado",
-                              "O seu pago foi validade correctamente !!!");
+                              "O seu pago foi validado correctamente !!!");
                         } else {
                           print('invalid!');
                         }
@@ -128,6 +135,8 @@ class CreditCardPageState extends State<CreditCardPage> {
                   style: TextStyle(fontSize: 18, color: Colors.cyan),
                 ),
                 onPressed: () {
+                  BlocProvider.of<TrolleyBloc>(context)
+                      .add(GetOutOfTrolley(list: lista));
                   Navigator.of(context).pop();
                   Navigator.of(context).pop();
                 }),

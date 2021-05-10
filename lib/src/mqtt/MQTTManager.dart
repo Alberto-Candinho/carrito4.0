@@ -80,6 +80,14 @@ class MQTTManager {
         retain: true);
   }
 
+  void publishNoRetain(String topic, String message_payload) {
+    final MqttClientPayloadBuilder builder = MqttClientPayloadBuilder();
+    //builder.addString(list.getProductsIds().toString());
+    builder.addString(message_payload);
+    _client.publishMessage(topic, MqttQos.exactlyOnce, builder.payload,
+        retain: false);
+  }
+
   //handlers
   void onSubscribed(String topic) {
     print("[MQTT] Client subcribed to $topic");

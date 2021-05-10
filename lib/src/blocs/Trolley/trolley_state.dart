@@ -26,4 +26,14 @@ class CurrentTrolleyContent extends TrolleyState {
   List<Object> get props => [trolley];
 }
 
+// class CurrentTrolleyContentWithError extends TrolleyState {
+//   final Trolley trolley;
+//   final String error;
+
+//   const CurrentTrolleyContentWithError(this.trolley, this.error);
+
+//   @override
+//   List<Object> get props => [trolley, error];
+// }
+
 class Unconnected extends TrolleyState {}

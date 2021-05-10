@@ -45,9 +45,11 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
     _categoriesBloc = new CategoriesBloc(marketRepository: _repository);
     _productsBloc = new ProductsBloc(marketRepository: _repository);
     _trolleyBloc = new TrolleyBloc(
-        trolley: _trolley,
-        marketRepository: _repository,
-        sharedPreferences: _prefs);
+      trolley: _trolley,
+      marketRepository: _repository,
+      sharedPreferences: _prefs,
+      mqttManager: _manager,
+    );
     readSharedPreferences();
     _manager.connect().then((value) => _subscribeToLists()).onError(
         (error, stackTrace) => print("[MQTT] Couldn't connect to broker"));
@@ -151,9 +153,15 @@ class _ShoppingListsAppState extends State<ShoppingListsApp> {
       if (trolleyInfo.containsKey("engadir")) {
         String receivedProductId = trolleyInfo["engadir"].toString();
         double quantity = double.parse(trolleyInfo["cantidade"].toString());
-        //_trolleyBloc.add(NewProduct(productId: receivedProductId, quantity: 1));
-        _trolleyBloc
-            .add(NewProduct(productId: receivedProductId, quantity: quantity));
+        if (trolleyInfo.containsKey("error")) {
+          String error = trolleyInfo["error"].toString();
+          //AQUI VAI O EVENTO NOVO
+          _trolleyBloc.add(NewProductWithError(
+              productId: receivedProductId, quantity: quantity, error: error));
+        } else {
+          _trolleyBloc.add(
+              NewProduct(productId: receivedProductId, quantity: quantity));
+        }
       } else if (trolleyInfo.containsKey("sacar")) {
         String receivedProductId = trolleyInfo["sacar"].toString();
         double quantity = double.parse(trolleyInfo["cantidade"].toString());

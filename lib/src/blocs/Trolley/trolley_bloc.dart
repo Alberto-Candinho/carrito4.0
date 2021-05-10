@@ -5,6 +5,8 @@ import 'package:market_categories_bloc/src/models/models.dart';
 import 'package:market_categories_bloc/src/resources/market_repository.dart';
 import 'package:meta/meta.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:market_categories_bloc/src/mqtt/MQTTAppState.dart';
+import 'package:market_categories_bloc/src/mqtt/MQTTManager.dart';
 
 part 'trolley_state.dart';
 part 'trolley_event.dart';
@@ -13,11 +15,13 @@ class TrolleyBloc extends Bloc<TrolleyEvent, TrolleyState> {
   final MarketRepository marketRepository;
   final Future<SharedPreferences> sharedPreferences;
   final Trolley trolley;
+  final MQTTManager mqttManager;
 
   TrolleyBloc(
       {@required this.trolley,
       @required this.marketRepository,
-      @required this.sharedPreferences})
+      @required this.sharedPreferences,
+      @required this.mqttManager})
       : super(Unconnected());
 
   @override
@@ -36,7 +40,57 @@ class TrolleyBloc extends Bloc<TrolleyEvent, TrolleyState> {
       yield* _mapNewProductsInListToState(event.newProducts);
     } else if (event is RemovedProductsInList) {
       yield* _mapRemovedProductsInListToState(event.removedProducts);
+    } else if (event is GetOutOfTrolley) {
+      yield* _mapGetOutOfTrolleyToState(event.list);
+    } else if (event is NewProductWithError) {
+      yield* _mapNewProductWithErrorToState(
+          event.productId, event.quantity, event.error);
     }
+  }
+
+  Stream<TrolleyState> _mapNewProductWithErrorToState(
+      String productId, double quantity, String error) async* {
+    yield TrolleyLoading(trolley);
+    TrolleyItem trolleyItem = trolley.getTrolleyItem(productId);
+    if (trolleyItem != null) {
+      trolleyItem.setError(error);
+      if (trolleyItem.product.aGranel())
+        trolleyItem.add(quantity);
+      else
+        trolleyItem.add(1);
+    } else {
+      print(
+          "[TROLLEY] Engadiuse un producto que non estaba na lista. Procedese a obter a información do mesmo na web");
+      Future<Product> newProduct = marketRepository.getProductInfo(productId);
+      Product product = await newProduct;
+      trolleyItem =
+          new TrolleyItem(product: product, fromList: false, error: error);
+      if (product.aGranel())
+        trolleyItem.add(quantity);
+      else
+        trolleyItem.add(1);
+      trolley.addTrolleyItem(trolleyItem);
+    }
+
+    _saveTrolleyState();
+
+    yield CurrentTrolleyContent(trolley);
+  }
+
+  Stream<TrolleyState> _mapGetOutOfTrolleyToState(ShoppingList list) async* {
+    yield TrolleyLoading(trolley);
+    list.setInTrolley(false);
+    trolley.trolleyItems = [];
+
+    SharedPreferences prefs = await sharedPreferences;
+    if ((prefs.containsKey("listInTrolley") &&
+        prefs.getString("listInTrolley") == list.listId)) {
+      prefs.remove("listInTrolley");
+      prefs.remove("products_in_trolley");
+      prefs.remove("quantities_in_trolley");
+    }
+    mqttManager.publishNoRetain(list.listId + "/totrolley", "Disconnect");
+    yield Unconnected();
   }
 
   Stream<TrolleyState> _mapLoadStoredTrolleyToState(
@@ -154,6 +208,7 @@ class TrolleyBloc extends Bloc<TrolleyEvent, TrolleyState> {
     yield TrolleyLoading(trolley);
     TrolleyItem trolleyItem = trolley.getTrolleyItem(productId);
     if (trolleyItem != null) {
+      trolleyItem.setError(null);
       if (trolleyItem.product.aGranel())
         trolleyItem.add(quantity);
       else

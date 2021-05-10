@@ -14,9 +14,9 @@ class Product {
   Product(
       {@required this.id,
       @required this.name,
+      @required this.brand,
       @required this.imaxe,
       @required this.description,
-      @required this.brand,
       @required this.unitPrice,
       @required this.discount,
       @required this.granel});

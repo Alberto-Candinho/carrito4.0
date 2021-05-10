@@ -5,8 +5,10 @@ class TrolleyItem {
   final Product product;
   double quantity;
   bool fromList;
+  String error;
 
-  TrolleyItem({@required this.product, @required this.fromList}) : quantity = 0;
+  TrolleyItem({@required this.product, @required this.fromList, this.error})
+      : quantity = 0;
 
   void add(double quantity) {
     this.quantity = this.quantity + quantity;
@@ -31,5 +33,13 @@ class TrolleyItem {
 
   void setFromList(bool fromList) {
     this.fromList = fromList;
+  }
+
+  void setError(String error) {
+    this.error = error;
+  }
+
+  String getError() {
+    return this.error;
   }
 }

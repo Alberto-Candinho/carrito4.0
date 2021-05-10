@@ -25,14 +25,43 @@ class ShoppingListInTrolley extends StatelessWidget {
                   : cardColor = Colors.white;
             } else
               cardColor = Colors.green;
-            return Card(
-                child: Text(
-                  itemInTrolley.product.getName() +
-                      " " +
-                      itemInTrolley.quantity.toString(),
-                  style: TextStyle(fontStyle: FontStyle.normal),
-                ),
-                color: cardColor);
+            if (itemInTrolley.getError() != null) {
+              return Card(
+                  child: Stack(
+                    children: [
+                      Text(
+                        itemInTrolley.product.getName() +
+                            " " +
+                            itemInTrolley.quantity.toString(),
+                        style: TextStyle(fontStyle: FontStyle.normal),
+                      ),
+                      Align(
+                        alignment: Alignment.topRight,
+                        child: InkWell(
+                            child: Icon(
+                              Icons.error,
+                              color: Colors.white70,
+                            ),
+                            onTap: () {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text(itemInTrolley.getError()),
+                              ));
+                            }),
+                      )
+                    ],
+                  ),
+                  color: cardColor);
+            } else {
+              return Card(
+                  child: Text(
+                    itemInTrolley.product.getName() +
+                        " " +
+                        itemInTrolley.quantity.toString(),
+                    style: TextStyle(fontStyle: FontStyle.normal),
+                  ),
+                  color: cardColor);
+            }
           }),
       Divider(
         height: 20,
@@ -41,10 +70,8 @@ class ShoppingListInTrolley extends StatelessWidget {
         endIndent: 20,
       ),
       Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
         children: [
-          Text(
-            trolley.getTotalPrice().toString(),
-          ),
           ElevatedButton.icon(
             style: ElevatedButton.styleFrom(
               primary: Color(0xFF006b1d),
@@ -52,7 +79,7 @@ class ShoppingListInTrolley extends StatelessWidget {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) => CreditCardPage()),
+                MaterialPageRoute(builder: (context) => CreditCardPage(list)),
               );
             },
             icon: Icon(Icons.payment, size: 18),
@@ -60,7 +87,10 @@ class ShoppingListInTrolley extends StatelessWidget {
               "PAGAR",
               //style: TextStyle(color: Color(0xFF006b1d)),
             ),
-          )
+          ),
+          Text(
+            trolley.getTotalPrice().toString() + " €",
+          ),
         ],
       ),
     ]);

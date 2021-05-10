@@ -22,7 +22,7 @@ class CatalogInfo extends Equatable {
           imaxe: productJson["imaxe"],
           description: productJson["descripcion"],
           brand: productJson["marca"],
-          unitPrice: productJson["prezo"],
+          unitPrice: productJson["precio"],
           discount: productJson["desconto"],
           granel: productJson["granel"]));
     }
