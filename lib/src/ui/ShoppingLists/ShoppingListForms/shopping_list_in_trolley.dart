@@ -89,7 +89,7 @@ class ShoppingListInTrolley extends StatelessWidget {
             ),
           ),
           Text(
-            trolley.getTotalPrice().toString() + " €",
+            trolley.getTotalPrice().toStringAsFixed(2) + " €",
           ),
         ],
       ),
